@@ -1844,3 +1844,521 @@ ls -l /home/kumar
 # Output: ls: cannot access /home/kumar: No such file or directory
 ```
 
+---
+
+# Archives with `tar`
+
+The `tar` command archives files and directories. It originally stood for **Tape Archive**, but now it's used for archiving data to any storage, not just tapes.
+
+
+## Syntax
+
+```bash
+tar [OPTIONS] [FILE(S)]
+```
+
+Common Options
+
+- `-c`: Create archive
+- `-f`: Specify archive file name
+- `-t`: List archive contents
+- `-v`: Verbose mode
+- `-x`: Extract archive
+- `-z`: Compress with gzip
+
+
+## Creating an Archive
+
+Archive a directory called `mydirectory`:
+
+```bash
+tar -cf mydirectory.tar mydirectory
+```
+
+View the result:
+
+```bash
+ls
+# Output: mydirectory  mydirectory.tar
+```
+
+
+## Listing Archive Contents
+
+```bash
+tar -tf mydirectory.tar
+```
+
+To see files as they're added (verbose):
+
+```bash
+tar -cvf mydirectory.tar mydirectory
+```
+
+
+## Extracting Archive
+
+Change to a different directory and extract:
+
+```bash
+cd restore
+tar -xf ../mydirectory.tar
+ls mydirectory
+```
+
+Verbose extract:
+
+```bash
+tar -xvf ../mydirectory.tar
+```
+
+
+## Compressing with `gzip`
+
+Two-step compression:
+
+```bash
+tar -cf mydirectory.tar mydirectory
+gzip mydirectory.tar
+ls
+# Output: mydirectory  mydirectory.tar.gz
+```
+
+Decompress with gunzip:
+
+```bash
+gunzip mydirectory.tar.gz
+ls
+# Output: mydirectory  mydirectory.tar
+```
+
+
+## Compress and Archive in One Step
+
+```bash
+tar -zcf mydirectory.tar.gz mydirectory
+```
+
+List compressed archive contents:
+
+```bash
+tar -ztvf mydirectory.tar.gz
+```
+
+
+## Using `.tgz` Extension
+
+```bash
+tar -zcf mydirectory.tgz mydirectory
+```
+
+`.tgz` and `.tar.gz` are the same format.
+
+
+## Overwrite Warning
+
+`tar` will overwrite files silently during extraction.
+
+Example:
+
+```bash
+echo 'hello' > mydirectory/cat.txt
+cat mydirectory/cat.txt
+# Output: hello
+
+tar -zxf ../mydirectory.tgz
+
+cat mydirectory/cat.txt
+# Output: (empty)
+```
+
+`cat.txt` was silently overwritten with the archived version of `cat.txt` which was empty.
+
+
+## Permissions Required
+
+You need proper permissions to archive or extract files. Use `sudo` when required.
+
+Example: Backing up `/etc`
+
+```bash
+sudo tar -zcf etc.tgz /etc
+```
+
+Output shows:
+
+```bash
+tar: Removing leading ‘/’ from member names
+```
+
+This avoids overwriting system files when extracting.
+
+
+## Legacy Syntax
+
+Old-style tar syntax is still supported:
+
+```bash
+tar zcvf mydirectory.tgz mydirectory
+```
+
+- No hyphens
+- Options must be grouped together
+- Must come immediately after `tar`
+
+Equivalent to:
+
+```bash
+tar -z -c -v -f mydirectory.tgz mydirectory
+```
+
+---
+
+# Disabling Linux User Accounts
+
+If someone is going on an extended leave, it’s a good idea to disable their account temporarily to reduce the attack surface. This prevents unauthorized use while keeping the account ready for future use.
+
+
+## Use `chage` to Expire an Account
+
+The `chage` command (short for *change age*) is a reliable way to disable a user account.
+
+### Syntax
+
+```bash
+chage [options] LOGIN
+```
+
+
+## Expire an Account Immediately
+
+```bash
+sudo chage -E 0 madan
+```
+
+Test it:
+
+```bash
+su - madan
+```
+
+Output:
+
+```bash
+Your account has expired; please contact your system administrator
+su: User account has expired
+```
+
+
+## Unexpire the Account
+
+```bash
+sudo chage -E -1 madan
+```
+
+Test login:
+
+```bash
+su - madan
+```
+
+Output:
+
+```bash
+Last login: Tue Jan 23 17:55:09 EST 2018 on pts/0
+Last failed login: Tue Jan 23 17:55:31 EST 2018 on pts/0
+There was 1 failed login attempt since the last successful login.
+```
+
+
+## Using `passwd` to Lock and Unlock Accounts
+
+### Lock an Account
+
+```bash
+sudo passwd -l madan
+```
+
+Output:
+
+```bash
+Locking password for user madan
+passwd: Success
+```
+
+### Unlock an Account
+
+```bash
+sudo passwd -u madan
+```
+
+Output:
+
+```bash
+Unlocking password for user madan
+passwd: Success
+```
+
+> ⚠️ This method does not prevent SSH key-based login.
+
+
+## Change User Shell to Prevent Login
+
+### Check Available Shells
+
+```bash
+cat /etc/shells
+```
+
+Output:
+
+```bash
+/bin/sh
+/bin/bash
+/sbin/nologin
+/usr/bin/sh
+/usr/bin/bash
+/usr/sbin/nologin
+```
+
+### Set User Shell to `nologin`
+
+```bash
+sudo usermod -s /sbin/nologin madan
+```
+
+This works for interactive logins, but SSH port forwarding and some non-interactive logins may still succeed. Again, prefer `chage -E 0` for reliable account disablement.
+
+
+## Shell Script to Delete a User Account
+
+```bash
+#!/bin/bash
+
+# This script deletes a user account.
+# Run as root.
+
+if [[ "${UID}" -ne 0 ]]; then
+  echo 'Please run with sudo or as root.' >&2
+  exit 1
+fi
+
+# Assume the first argument is the user to delete
+USER="${1}"
+
+# Delete the user
+userdel "${USER}"
+
+# Check if the deletion was successful
+if [[ "${?}" -ne 0 ]]; then
+  echo "The account ${USER} was NOT deleted." >&2
+  exit 1
+fi
+
+echo "The account ${USER} was deleted."
+exit 0
+```
+
+---
+
+# cut
+
+The `cut` command extracts specific sections from each line of input. Output is sent to `STDOUT`.
+
+You can extract:
+
+- By byte position with `-b`
+- By character position with `-c`
+- By field (column) with `-f`
+
+When using `-f`, use `-d` to specify the delimiter (default is tab).
+
+Ideal use case: extract columns from structured files (e.g., CSV, `/etc/passwd`).
+
+
+## Examples Using /etc/passwd
+
+### Cut by Character (`-c`)
+
+Print the 1st character of each line:
+
+```bash
+cut -c 1 /etc/passwd
+```
+
+Print the 7th character:
+
+```bash
+cut -c 7 /etc/passwd
+```
+
+Print characters from 4 to 7:
+
+```bash
+cut -c 4-7 /etc/passwd
+```
+
+Print from the 4th character to the end:
+
+```bash
+cut -c 4- /etc/passwd
+```
+
+Print the first 4 characters:
+
+```bash
+cut -c -4 /etc/passwd
+# Same as:
+cut -c 1-4 /etc/passwd
+```
+
+Print the 1st, 3rd, and 5th characters:
+
+```bash
+cut -c 1,3,5 /etc/passwd
+```
+
+Character order in the list doesn’t matter. This yields the same result:
+
+```bash
+cut -c 5,3,1 /etc/passwd
+```
+
+If the position doesn’t exist (e.g., 999th character), blank lines are returned:
+
+```bash
+cut -c 999 /etc/passwd
+```
+
+### Cut by Byte (`-b`)
+
+```bash
+cut -b 1 /etc/passwd
+```
+
+> **Note**: For standard ASCII, `-b` and `-c` are equivalent. For multibyte characters (e.g., UTF-8), they're different.
+
+### Cut by Field (`-f`)
+
+Fields are separated by tab by default.
+
+Create tab-delimited data:
+
+```bash
+echo -e 'one\ttwo\tthree'
+```
+
+Display the 1st field:
+
+```bash
+echo -e 'one\ttwo\tthree' | cut -f 1
+```
+
+Change to 2nd or 3rd field by updating the `-f` value.
+
+### Using Custom Delimiters (e.g., comma in CSV)
+
+```bash
+echo 'one,two,three' | cut -d ',' -f 1
+```
+
+Works even without quotes or with no space after `-d`:
+
+```bash
+cut -d, -f 1
+```
+
+Avoid shell misinterpretation by quoting special characters:
+
+```bash
+echo 'one\two\three' | cut -d '\' -f 1  # Incorrect
+echo 'one\two\three' | cut -d '\\' -f 1  # Correct
+```
+
+
+## Use Case: `/etc/passwd` Fields
+
+Colon (`:`) is the delimiter.
+
+Print username and UID:
+
+```bash
+cut -d ':' -f 1,3 /etc/passwd
+```
+
+Change output delimiter to a comma:
+
+```bash
+cut -d ':' -f 1,3 --output-delimiter=',' /etc/passwd
+```
+
+
+## Cutting CSV Files and Removing Headers
+
+Sample file `people.csv`:
+
+```bash
+first,last
+John,Smitt
+firstly,mclasty
+Mr. firstly,mclasty
+```
+
+Cut the first field:
+
+```bash
+cut -d ',' -f 1 people.csv
+```
+
+Output includes header:
+
+```bash
+first
+John
+firstly
+Mr. firstly
+```
+
+### Solution one - Remove header before `cut`
+
+```bash
+grep -v '^first,last$' people.csv | cut -d ',' -f 1
+```
+
+Explanation:
+
+- `^` matches start of line
+- `$` matches end of line
+- `-v` inverts match
+
+### Solution two - Use `cut` first, then filter header
+
+```bash
+cut -d ',' -f 1 people.csv | grep -v '^first$'
+```
+
+
+## Limitation: Single-character Delimiter Only
+
+`people.dat`:
+
+```bash
+DATA:firstDATA:last
+DATA:JohnDATA:Smitt
+DATA:firstlyDATA:mclasty
+DATA:Mr firstlyDATA:mclasty
+```
+
+Attempting this:
+
+```bash
+cut -d 'DATA:' -f 2 people.dat
+```
+
+Results in error:
+
+```bash
+cut: the delimiter must be a single character
+```
+
+Solution: Use `awk` or similar tools for multi-character delimiters.
