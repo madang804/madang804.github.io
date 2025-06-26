@@ -1,7 +1,25 @@
 ## Table of Contents
 1. [Shell Built-ins and Variables](#shell-built-ins-and-variables)
-2. [Pseudocode, Special Variables, Command Substitution, if Statement, Conditionals Expressions](#pseudocode,-special-variables,-command-substitution,-if-statement,-conditionals-expressions)
-
+2. [Pseudocode, Special Variables, Command Substitution, if Statement, Conditionals Expressions](#pseudocode-special-variables-command-substitution-if-statement-conditionals-expressions)
+3. [Exit Statuses, Return Codes, Special Variables and String Test Conditionals](#exit-statuses-return-codes-special-variables-and-string-test-conditionals)
+4. [Reading Standard Input, Creating Accounts, Username Conventions, and More Quoting](#reading-standard-input-creating-accounts-username-conventions-and-more-quoting)
+5. [Random Data, Cryptographic Hash Functions, Text and String Manipulation](#random-data-cryptographic-hash-functions-text-and-string-manipulation)
+6. [Positional Parameters, Arguments, For Loop, Special Parameters](#positional-parameters-arguments-for-loop-special-parameters)
+7. [The While Loop, Shifting, Sleeping](#the-while-loop-shifting-sleeping)
+8. [Advanced Standard Input, Standard Output, and Standard Error](#advanced-standard-input-standard-output-and-standard-error)
+9. [Case Statements](#case-statements)
+10. [Functions](#functions)
+11. [Parsing Command Line Options with getopts](#parsing-command-line-options-with-getopts)
+12. [Math Operations](#math-operations)
+13. [Finding Files](#finding-files)
+14. [Userdel Command](#userdel-command)
+15. [Archives with tar](#archives-with-tar)
+16. [Disabling User Accounts](#disabling-user-accounts)
+17. [Cut command](#cut-command)
+18. [AWK Command](#awk-command)
+19. [Sort, Uniq and WC Command](#sort-uniq-and-wc-command)
+20. [SED — Stream Editor](#sed--stream-editor)
+21. [Configuring a Mini Network and Scripting for Remote Systems](#configuring-a-mini-network-and-scripting-for-remote-systems) 
 ---
 
 # Shell Built-ins and Variables
@@ -698,7 +716,7 @@ madan kumar: 89725e0ce5172c6a93bfe8b1849cb292642a2e5cc2643698
 
 ---
 
-# The While Loop, Shifting, Sleeping in Bash
+# The While Loop, Shifting, Sleeping
 
 
 ## `while` Loop
@@ -830,7 +848,7 @@ This allows you to capture multiple words in one variable (`COMMENT`) without kn
 
 ---
 
-# Advanced Standard Input, Output, and Error Handling in Linux
+# Advanced Standard Input, Standard Output, and Standard Error
 
 Linux supports three types of I/O streams:
 
@@ -1143,7 +1161,7 @@ This is useful for creating simple menus or interactive scripts.
 
 ---
 
-# Shell Scripting: Functions
+# Functions
 
 
 ## What Are Functions?
@@ -1476,7 +1494,7 @@ exit 0
 
 ---
 
-# Bash Math Operations
+# Math Operations
 
 Bash supports basic integer math operations using arithmetic expansion.
 
@@ -1570,7 +1588,7 @@ NUM=$(expr 2 + 3)  # 5
 
 ---
 
-# Finding Files in Linux
+# Finding Files
 
 
 ## Checking if a Command Exists
@@ -1721,7 +1739,7 @@ This confirms the command exists even if your normal user can't find it due to `
 
 ---
 
-# `userdel` Command in Linux
+# Userdel Command
 
 The `userdel` command deletes a user account and optionally removes related files.
 
@@ -2020,7 +2038,7 @@ tar -z -c -v -f mydirectory.tgz mydirectory
 
 ---
 
-# Disabling Linux User Accounts
+# Disabling User Accounts
 
 If someone is going on an extended leave, it’s a good idea to disable their account temporarily to reduce the attack surface. This prevents unauthorized use while keeping the account ready for future use.
 
@@ -2167,7 +2185,7 @@ exit 0
 
 ---
 
-# cut
+# Cut Command
 
 The `cut` command extracts specific sections from each line of input. Output is sent to `STDOUT`.
 
@@ -2371,7 +2389,7 @@ Solution: Use `awk` or similar tools for multi-character delimiters.
 
 ---
 
-# AWK Command Reference
+# AWK Command
 
 Unlike `cut`, `awk` can handle **multi-character delimiters**.
 
@@ -2569,7 +2587,7 @@ Result:
 
 ---
 
-# `sort`, `uniq`, and `wc` Command Notes
+# Sort, Uniq and WC Command
 
 This guide explains how to use `sort`, `uniq`, and `wc` in Linux for text processing and data analysis.
 
@@ -2681,7 +2699,7 @@ sort -t ':' -k 3 -n /etc/passwd
 
 ---
 
-# `sed` — Stream Editor
+# SED — Stream Editor
 
 `sed` stands for **Stream Editor**. It's used for editing data in a stream — such as:
 
