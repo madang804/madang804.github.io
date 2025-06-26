@@ -1,5 +1,6 @@
 # Shell Built-ins and Variables
 
+
 ## What Are Shell Built-ins?
 
 - Shell built-in commands are part of the shell itself.
@@ -21,7 +22,6 @@ type -a echo
 
 Prefer shell built-ins when available.
 
----
 
 ## Getting Help on Built-ins
 
@@ -33,7 +33,6 @@ help echo
 
 This shows help only for built-ins.
 
----
 
 ## Example: External Command
 
@@ -51,7 +50,6 @@ This shows help only for built-ins.
 man uptime
 ```
 
----
 
 ## Shell Variables
 
@@ -91,6 +89,7 @@ This applies to all commands, not just `echo`.
 
 # Pseudocode, Special Variables, Command Substitution, if Statement, Conditionals Expressions
 
+
 ## Pseudocode in Shell Scripts
 
 Before writing a shell script:
@@ -101,7 +100,6 @@ Before writing a shell script:
 
 This helps in planning and improves readability.
 
----
 
 ## Special Variables: `UID` and `EUID`
 
@@ -117,7 +115,6 @@ UID='1001'
 # -bash: UID: readonly variable
 ```
 
----
 
 ## Displaying User Information
 
@@ -143,7 +140,6 @@ uid=1000(madan) gid=1000(madan) groups=1000(madan)
 whoami               # Same as `id -un`
 ```
 
----
 
 ## Command Substitution
 
@@ -160,7 +156,6 @@ Legacy syntax (less preferred):
 USER_NAME=`id -un`
 ```
 
----
 
 ## `if` Statement Basics
 
@@ -180,7 +175,6 @@ fi
 - Alternatively, use a newline for better readability
 - An exit status of 0 means "true"
 
----
 
 ## Conditional Expressions
 
@@ -227,6 +221,7 @@ type -a [
 
 # Exit Statuses, Return Codes, Special Variables and String Test Conditionals 
 
+
 ## exit Built-in
 
 `exit` is a shell built-in that exits the shell with a status code.
@@ -238,7 +233,6 @@ exit [N]
 - If `N` is not specified, the exit status of the last command is used.
 - It's best to be explicit with exit codes for clarity.
 
----
 
 ## Special Variable: `$?`
 
@@ -257,7 +251,6 @@ echo $?
 # 0
 ```
 
----
 
 ## Equal Sign: Assignment vs Test
 
@@ -281,11 +274,12 @@ VARIABLE=value
 - Single `=` checks for exact match
 - Double `==` performs pattern matching, e.g., `[[ "$x" == a* ]]`
 
-> **Note:** Even if you're doing an exact match, some people still use `==`. Both work in most cases, but it's good to understand the difference.
+> Even if you're doing an exact match, some people still use `==`. Both work in most cases, but it's good to understand the difference.
 
 ---
 
 # Reading Standard Input, Creating Accounts, Username Conventions, and More Quoting
+
 
 ## Reading Standard Input with `read`
 
@@ -311,7 +305,6 @@ echo $THING
 # something
 ```
 
----
 
 ## Creating User Accounts and Username Conventions
 
@@ -337,9 +330,8 @@ madankum+  3335 3312  0 12:29 pts/0 00:00:00 ps -ef
 - The username here is `madankumar`, but only the first 8 characters are shown.
 - A `+` at the end means the username is longer than 8 characters.
 
-> **Note:** This won’t break anything, but it's something to keep in mind when parsing or viewing command output.
+> This won’t break anything, but it's something to keep in mind when parsing or viewing command output.
 
----
 
 ## Quoting Reminder
 
@@ -352,6 +344,7 @@ Quoting behavior affects input and variable expansion:
 ---
 
 # Random Data, Cryptographic Hash Functions, Text and String Manipulation
+
 
 ## RANDOM Built-in Variable
 
@@ -386,7 +379,6 @@ date +%s%N
 1501863591950214399
 ```
 
----
 
 ## Checksums and Hashing
 
@@ -406,7 +398,6 @@ sha1sum CentOS-7-x86_64-Minimal-1611.iso
 
 - If hashes match, the file is intact and uncorrupted.
 
----
 
 ## Hash Functions Available
 
@@ -424,7 +415,6 @@ Common hash tools
 
 These convert large data blocks into a fixed-size hash.
 
----
 
 ## Hash Output as Passwords
 
@@ -455,7 +445,6 @@ date +%s%N${RANDOM}${RANDOM} | sha256sum | head -c48
 89725e0ce5172c6a93bfe8b1849cb292642a2e5cc2643698
 ```
 
----
 
 ## Add a Special Character
 
@@ -479,6 +468,7 @@ echo "${PASSWORD}${SPECIAL_CHARACTER}"
 
 # Positional Parameters, Arguments, For Loop, Special Parameters
 
+
 ## Parameters vs Arguments
 
 - **Parameter**: A variable used inside the shell script.
@@ -493,10 +483,8 @@ echo "${PASSWORD}${SPECIAL_CHARACTER}"
 | `${3}`               | Third argument                     |
 | ...                  | And so on                          |
 
----
 
 ## Command Search Path (`PATH`)
-
 
 - Stored in the `PATH` environment variable.
 - When a command is typed:
@@ -514,7 +502,6 @@ which head
 /usr/bin/head
 ```
 
----
 
 ## Override a Built-in Command
 
@@ -558,7 +545,6 @@ head
 sudo rm /usr/local/bin/head
 ```
 
----
 
 ## Bash Hash Table
 
@@ -584,9 +570,8 @@ type head
 head is /usr/bin/head
 ```
 
-> **Note:** Typically hashing is not a problem because commands don’t usually just randomly appear and disappear during the same shell session and probably not during the execution of a shell script. In any case, it’s just something to be aware of.
+> Typically hashing is not a problem because commands don’t usually just randomly appear and disappear during the same shell session and probably not during the execution of a shell script. In any case, it’s just something to be aware of.
 
----
 
 ## `${0}` and How It's Stored
 
@@ -618,7 +603,6 @@ script.sh
 You executed this command: /usr/local/bin/script.sh
 ```
 
----
 
 ## `basename` and `dirname`
 
@@ -637,7 +621,6 @@ dirname /dir/script.sh
 
 These commands do not check if the file exists.
 
----
 
 ## Special Parameters
 
@@ -647,7 +630,6 @@ These commands do not check if the file exists.
 | `$@`               | All arguments as separate words (quoted: "$1" "$2" ...)   |
 | `$*`               | All arguments as a single word (quoted: "$1 $2 ...")      |
 
----
 
 ## `for` Loop Syntax
 
@@ -661,7 +643,6 @@ done
 
 If `in WORDS...` is omitted, `in $@` is assumed.
 
----
 
 ## Example: Password Generator Script
 
@@ -713,6 +694,7 @@ madan kumar: 89725e0ce5172c6a93bfe8b1849cb292642a2e5cc2643698
 
 # The While Loop, Shifting, Sleeping in Bash
 
+
 ## `while` Loop
 
 `while` is a shell built-in command:
@@ -727,7 +709,6 @@ while COMMANDS; do COMMANDS; done
 
 If the condition is never true, the commands inside `while` will never run.
 
----
 
 ## `true` Command
 
@@ -745,7 +726,6 @@ echo $?
 
 Even with arguments, `true` always returns 0.
 
----
 
 ## `sleep` Command
 
@@ -769,7 +749,6 @@ sleep 5s
 sleep 1m
 ```
 
----
 
 ## `shift` Command
 
@@ -825,7 +804,6 @@ Parameter 2:
 Parameter 3:
 ```
 
----
 
 ## Use Case for `shift`
 
@@ -858,7 +836,6 @@ By default:
 - `stdin` comes from the keyboard.
 - `stdout` and `stderr` go to the screen.
 
----
 
 ## Redirecting `stdout`
 
@@ -896,7 +873,6 @@ ls -ld /
 # dr-xr-xr-x 19 root root 4096 Jul 28 11:08 /
 ```
 
----
 
 ## Redirecting `stdin`
 
@@ -924,7 +900,6 @@ Difference:
 - `|`: `stdin` comes from command output
 - `<`: `stdin` comes from a file
 
----
 
 ## Appending Output
 
@@ -934,7 +909,6 @@ Use `>>` instead of `>` to append:
 echo "append this" >> file.txt
 ```
 
----
 
 ## File Descriptors
 
@@ -946,7 +920,6 @@ Each process starts with three file descriptor:
 
 Everything in Linux is treated as a file. File descriptors are pointers to data sources (like files, screens, or devices).
 
----
 
 ## Explicit vs Implicit Redirection
 
@@ -965,7 +938,6 @@ echo "${UID}" > uid     # stdout (implicit)
 echo "${UID}" 1> uid    # stdout (explicit)
 ```
 
----
 
 ## Redirecting `stderr`
 
@@ -1001,7 +973,6 @@ Newer syntax:
 head -n1 /etc/passwd /fakefile &> head.both
 ```
 
----
 
 ## Pipes and Error Output
 
@@ -1039,7 +1010,6 @@ Final output:
 3  head: cannot open ‘/fakefile’ for reading: No such file or directory 
 ```
 
----
 
 ## Suppressing Output
 
@@ -1057,6 +1027,7 @@ Useful in scripts to hide output from users.
 
 The `case` statement is a clean way to make decisions based on the value of a variable.
 
+
 ## Syntax
 
 ```bash
@@ -1071,7 +1042,6 @@ esac
 - Matching stops after the first match.
 - If no match is found, nothing runs unless a catch-all `*` pattern is used.
 
----
 
 ## Example
 
@@ -1097,7 +1067,6 @@ esac
 - Patterns like `status|state` allow for multiple matches.
 - `*` is a catch-all fallback placed last.
 
----
 
 ## Notes
 
@@ -1113,7 +1082,6 @@ case "$1" in
 esac
 ```
 
----
 
 ## Compact Style
 
@@ -1134,7 +1102,6 @@ esac
 - Space after parentheses `) ` is optional but improves readability.
 - Use semicolons to separate multiple commands on the same line.
 
----
 
 ## Use Cases
 
@@ -1150,7 +1117,6 @@ Example
 
 These scripts rely on `case` to handle actions like start, stop, restart, and status.
 
----
 
 ## User Input Example
 
@@ -1173,6 +1139,7 @@ This is useful for creating simple menus or interactive scripts.
 
 # Shell Scripting: Functions
 
+
 ## What Are Functions?
 
 A function is a group of commands grouped under a single name.
@@ -1189,7 +1156,6 @@ You can:
 
 > If you're repeating code or copying/pasting, it's time to use a function.
 
----
 
 ## Function Syntax
 
@@ -1211,7 +1177,6 @@ name() {
 - Define a function before you use it.
 - To call a function: just use its name (no parentheses).
 
----
 
 ## Example: Basic Function
 
@@ -1234,7 +1199,6 @@ log "This is fun!"
 - `$@` expands to all positional arguments.
 - Global variables like `VERBOSE` should be used with care.
 
----
 
 ## Variable Scope in Functions
 
@@ -1242,7 +1206,6 @@ log "This is fun!"
 - Global variables exist everywhere in the script.
 - Best practice: Use `local` inside functions to avoid variable conflicts.
 
----
 
 ## Example: Pass VERBOSE as Argument
 
@@ -1263,7 +1226,6 @@ log "true" "This is fun!"
 
 Use `shift` to drop the first argument `$1` and shift the others left.
 
----
 
 ## Optional: Use a Global Constant
 
@@ -1285,7 +1247,6 @@ log "This is fun!"
 - `readonly` marks a variable unchangeable.
 - Acts like a constant in other languages.
 
----
 
 ## Logging to System Log
 
@@ -1317,14 +1278,12 @@ Jan 12 17:55:28 machinename script.sh: Hello!
 Jan 12 17:55:28 machinename script.sh: This is fun!
 ```
 
----
 
 ## Best Practice
 
 - Define all functions at the top of the script.
 - Only `readonly` variables or sourced files should come before functions.
 
----
 
 ## Practical Example: Backup a File
 
@@ -1364,14 +1323,12 @@ else
 fi
 ```
 
----
 
 ## Why Use `/var/tmp`?
 
 - Files in `/var/tmp` persist across reboots.
 - Safer than `/tmp`, which is regularly cleaned.
 
----
 
 ## Why Use `basename` and `date`?
 
@@ -1387,7 +1344,6 @@ date +%F-%N
 - `date +%F` gives sortable full date (YYYY-MM-DD).
 - `date +%N` gives nanoseconds for uniqueness.
 
----
 
 ## Alternatives to %N for Unique Names
 
@@ -1404,7 +1360,6 @@ You can also use:
 
 If you want your shell scripts to behave like Linux executables, you should let users specify options that change script behavior. This is hard to do with a basic `case` statement, but `getopts` handles it well.
 
----
 
 ## Why `getopts`?
 
@@ -1413,7 +1368,6 @@ If you want your shell scripts to behave like Linux executables, you should let 
 - You may see `getopt` in older scripts. It's an external command with quirks.
 - For more on `getopt`, check its man page.
 
----
 
 ## Syntax
 
@@ -1431,7 +1385,6 @@ Use `getopts` inside a `while` loop. It returns:
 
 It parses positional parameters `$@`by default.
 
----
 
 ## Example: Password Generator Script
 
@@ -1514,3 +1467,99 @@ exit 0
 - `getopts` uses `OPTARG` for option arguments.
 - Use `OPTIND` to shift and remove parsed options.
 - The script avoids using `log` for final password output to ensure it prints regardless of verbose mode.
+
+---
+
+# Bash Math Operations
+
+Bash supports basic integer math operations using arithmetic expansion.
+
+
+## Arithmetic Expansion Syntax
+
+```bash
+NUM=$(( 1 + 2 ))
+```
+
+- `$(( ))` tells Bash to evaluate the expression.
+- The result `3` is assigned to `NUM`.
+
+You can also use it for:
+
+```bash
+NUM=$(( 10 - 1 ))  # 9
+NUM=$(( 2 * 4 ))   # 8
+NUM=$(( 6 % 4 ))   # 2
+NUM=$(( 6 / 4 ))   # 1
+```
+
+Bash does integer division only. No rounding. It truncates decimals.
+
+Need floating-point support? Use `bc` or `awk`.
+
+
+## Using Variables in Arithmetic
+
+```bash
+DICEA='3'
+DICEB='6'
+TOTAL=$(( DICEA + DICEB ))
+```
+
+Inside `(( ))`, do not prefix variables with `$`.
+
+
+## Modifying Variables with Arithmetic
+
+You can change a variable's value directly:
+
+```bash
+NUM='1'
+
+(( NUM++ ))  # 2
+(( NUM-- ))  # 1
+```
+
+Other operations:
+
+```bash
+(( NUM += 5 ))  # 6
+(( NUM -= 5 ))  # 1
+(( NUM *= 5 ))  # 5
+(( NUM /= 5 ))  # 1
+(( NUM %= 5 ))  # 1
+```
+
+With substitution:
+
+```bash
+NUM=$(( NUM += 5 ))  # Still updates and reassigns NUM
+```
+
+
+## Other Math Methods
+
+### 1. Using `let`
+
+```bash
+let NUM='2 + 3'  # 5
+let NUM++        # 6
+```
+
+- `let` is a shell built-in.
+- Run `help let` for supported operators.
+
+### 2. Using `expr`
+
+```bash
+expr 1 + 1
+# Output: 2
+```
+
+Assignment with command substitution:
+
+```bash
+NUM=$(expr 2 + 3)  # 5
+```
+
+---
