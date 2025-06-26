@@ -2340,7 +2340,7 @@ cut -d ',' -f 1 people.csv | grep -v '^first$'
 
 ## Limitation: Single-character Delimiter Only
 
-`people.dat`:
+File: `people.dat`
 
 ```bash
 DATA:firstDATA:last
@@ -2362,3 +2362,203 @@ cut: the delimiter must be a single character
 ```
 
 Solution: Use `awk` or similar tools for multi-character delimiters.
+
+---
+
+# AWK Command Reference
+
+Unlike `cut`, `awk` can handle **multi-character delimiters**.
+
+
+## Example: Using `awk` with Custom Delimiter
+
+File: `people.dat`
+
+```bash
+DATA:firstDATA:last
+DATA:JohnDATA:Smitt
+DATA:firstlyDATA:mclasty
+DATA:Mr firstlyDATA:mclasty
+```
+
+```bash
+awk -F 'DATA:' '{print $2}' people.dat
+```
+
+Output:
+
+```bash
+first
+John
+firstly
+Mr firstly
+```
+
+Breakdown:
+
+- `-F`: Specifies the field separator (`DATA:` in this case).
+- `{}`: Defines the action to take (`print` in this case).
+- `$2`: Prints the second field.
+
+
+## Comparing `cut` and `awk`
+
+Both commands below produce the same result:
+
+```bash
+cut -d ':' -f 1,3 /etc/passwd
+awk -F ':' '{print $1, $3}' /etc/passwd
+```
+
+Note: `awk` separates fields with a space by default when using print.
+
+To change the output field separator (OFS):
+
+```bash
+awk -F ':' -v OFS=',' '{print $1, $3}' /etc/passwd
+```
+
+Alternative using string formatting:
+
+```bash
+awk -F ':' '{print $1 "," $3}' /etc/passwd
+awk -F ':' '{print $1 ", " $3}' /etc/passwd
+awk -F ':' '{print "COL1: " $1 " COL3: " $3}' /etc/passwd
+```
+
+
+## Field Reordering
+
+You cannot change field order using `cut`:
+
+```bash
+cut -d ':' -f 3,1 /etc/passwd  # Still displays 1 before 3
+```
+
+You can with `awk`:
+
+```bash
+awk -F ':' '{print $3, $1}' /etc/passwd
+```
+
+
+## Special Variable: `$NF`
+
+- `$NF` returns the last field.
+- `$(NF-1)` returns the second last field.
+
+Examples:
+
+```bash
+awk -F ':' '{print $NF}' /etc/passwd
+awk -F ':' '{print $(NF - 1)}' /etc/passwd
+```
+
+
+## AWK and Irregular Whitespace
+
+File: `lines`
+
+```bash
+L1C1   L1C2
+L2C1 L2C2
+L3C1     L3C2
+L4C1 L4C2
+```
+
+Command:
+
+```bash
+awk '{print $1, $2}' lines
+```
+
+Output:
+
+```bash
+L1C1 L1C2
+L2C1 L2C2
+L3C1 L3C2
+L4C1 L4C2
+```
+
+- AWK uses whitespace (spaces/tabs) as the default field separator.
+- It handles extra/missing spaces and tabs cleanly.
+
+
+## Extracting Open Port Numbers with AWK
+
+Command:
+
+```bash
+netstat -nutl
+```
+
+Output:
+
+```bash
+Active Internet connections (only servers)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN
+tcp        0      0 127.0.0.1:25            0.0.0.0:*               LISTEN
+tcp6       0      0 :::22                   :::*                    LISTEN
+tcp6       0      0 ::1:25                  :::*                    LISTEN
+udp        0      0 0.0.0.0:68              0.0.0.0:*
+udp        0      0 0.0.0.0:7755            0.0.0.0:*
+udp        0      0 :::26314                :::*
+```
+
+### Step 1: Remove header lines
+
+```bash
+netstat -nutl | grep -Ev '^Active|^Proto'
+```
+
+or:
+
+```bash
+netstat -nutl | grep ':'
+```
+
+### Step 2: Extract the 4th column (Local Address)
+
+```bash
+netstat -nutl | grep ':' | awk '{print $4}'
+```
+
+### Step 3: Extract the port number from Local Address
+
+```bash
+netstat -nutl | grep ':' | awk '{print $4}' | awk -F ':' '{print $NF}'
+```
+
+Output:
+
+```bash
+22
+25
+22
+25
+68
+7755
+26314
+```
+
+### Filtering Only IPv4 (TCP4) Ports
+
+```bash
+netstat -4nutl | grep ':' | awk '{print $4}' | awk -F ':' '{print $2}'
+
+# or
+netstat -4nutl | grep ':' | awk '{print $4}' | cut -d ':' -f 2
+```
+
+Result:
+
+```bash
+22
+25
+68
+7755
+```
+
+
