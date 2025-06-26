@@ -1,3 +1,9 @@
+## Table of Contents
+1. [Shell Built-ins and Variables](#shell-built-ins-and-variables)
+2. [Pseudocode, Special Variables, Command Substitution, if Statement, Conditionals Expressions](#pseudocode,-special-variables,-command-substitution,-if-statement,-conditionals-expressions)
+
+---
+
 # Shell Built-ins and Variables
 
 
@@ -2636,6 +2642,7 @@ Counts lines, words, and characters in files.
 
 ```bash
 wc /etc/passwd
+
 # output: 25 50 1245 /etc/passwd
 ```
 
@@ -2674,3 +2681,452 @@ sort -t ':' -k 3 -n /etc/passwd
 
 ---
 
+# `sed` — Stream Editor
+
+`sed` stands for **Stream Editor**. It's used for editing data in a stream — such as:
+
+- One process to another via a pipe
+- One file to another via redirect
+- One device to another
+
+`sed` performs basic text transformations:
+
+- Substitute text
+- Remove lines
+- Append text after certain lines
+- Insert text before certain lines
+
+Unlike interactive editors like `vim` or `nano`, `sed` works **non-interactively**, making it ideal for automation and scripting.
+
+
+
+## Basic Substitution
+
+Let’s use a file called `manager.txt`:
+
+```bash
+cat manager.txt
+Dwight is the assistant regional manager.
+```
+
+Replace "assistant" with "assistant to the":
+
+```bash
+sed 's/assistant/assistant to the/' manager.txt
+
+# output: Dwight is the assistant to the regional manager.
+```
+
+Format:
+
+```bash
+sed 's/search-pattern/replacement/flags' file
+```
+
+### Another Example
+
+```bash
+cat love.txt
+I love my wife.
+```
+
+Replace "my wife" with "sed":
+
+```bash
+sed 's/my wife/sed/' love.txt
+
+# output: I love sed
+```
+
+### Case Insensitive Replacement
+
+```bash
+sed 's/MY WIFE/sed/i' love.txt
+```
+
+
+## Global Replacement
+
+Add more lines to `love.txt`:
+
+```bash
+cat love.txt
+I love my wife.
+This is line 2.
+I love my wife with all of my heart.
+I love my wife and my wife loves me. Also, my wife loves the cat.
+```
+
+Replace all occurrences on a line:
+
+```bash
+sed 's/my wife/sed/g' love.txt
+
+# output
+I love sed.
+This is line 2.
+I love sed with all of my heart.
+I love sed and sed loves me. Also, sed loves the cat
+```
+
+Replace only the second occurrence:
+
+```bash
+sed 's/my wife/sed/2' love.txt
+
+# output
+I love my wife.
+This is line 2.
+I love my wife with all of my heart.
+I love my wife and sed loves me. Also, my wife loves the cat
+```
+
+
+## Save Output to New File
+
+```bash
+sed 's/my wife/sed/g' love.txt > my-new-love.txt
+```
+
+
+## In-Place Editing
+
+```bash
+sed -i.bak 's/my wife/sed/' love.txt
+```
+
+- Original file is modified
+- Backup created: `love.txt.bak`
+- No space allowed after `-i`
+
+
+## Save Only Matching Lines
+
+```bash
+sed 's/love/like/gw like.txt' love.txt
+```
+
+`like.txt` now contains only lines where substitutions occurred.
+
+```bash
+cat like.txt
+I like sed.
+I like sed with all of my heart.
+I like sed and my wife likes me. Also, my wife likes the cat
+```
+
+
+## Use `sed` in a Pipe
+
+```bash
+cat like.txt | sed 's/my wife/sed/g'
+
+# equivalent to:
+sed 's/my wife/sed/g' like.txt
+```
+
+
+## Use Alternative Delimiters
+
+Problem: `/` appears in paths
+
+Escape `/`
+
+```bash
+echo '/home/madan' | sed 's/\/home\/madan/\/export\/users\/kumar/'
+```
+
+Better: Use alternative delimiter `#`:
+
+```bash
+echo '/home/madan' | sed 's#/home/madan#/export/users/kumar#'
+```
+
+
+## Practical Use Cases
+
+- Replace placeholders in template files for deployments
+- Change hostnames during server migrations
+- Update configuration files during cluster setup
+
+
+## Delete Matching Lines
+
+```bash
+cat love.txt
+I love sed.
+This is line 2.
+I love sed with all of my heart.
+I love sed and my wife loves me. Also, my wife loves the cat.
+```
+
+Delete the line with "This":
+
+```bash
+sed '/This/d' love.txt
+```
+
+Delete lines containing "love":
+
+```bash
+sed '/love/d' love.txt
+```
+
+
+## Example - Clean Configuration Files
+
+```bash
+cat config
+# User to run service as.
+User apache
+
+# Group to run service as.
+Group apache
+```
+
+Remove comment lines:
+
+```bash
+sed '/^#/d' config
+```
+
+Remove blank lines:
+
+```bash
+sed '/^$/d' config
+```
+
+Or chain both tasks together:
+
+```bash
+sed '/^#/d; /^$/d' config
+```
+
+---
+
+# Configuring a Mini Network and Scripting for Remote Systems
+
+This guide sets up a simple virtual network of 3 machines to simulate a company environment. We'll configure name resolution, SSH key-based authentication, and remote command execution.
+
+
+## Virtual Machine Setup
+
+- `admin01`: Main administration VM.
+- `server01`: Target server.
+- `server02`: Another target server.
+
+
+## Configure Local Name Resolution
+
+Instead of relying on DNS, add entries to the `/etc/hosts` file:
+
+```bash
+echo '10.9.8.11 server01' | sudo tee -a /etc/hosts
+echo '10.9.8.12 server02' | sudo tee -a /etc/hosts
+```
+
+Verify:
+
+```bash
+cat /etc/hosts
+```
+
+Avoid this incorrect usage:
+
+```bash
+sudo echo test >> /etc/hosts
+# Results in "Permission denied" because redirection isn't run as root
+```
+
+
+## Test Hostname Resolution
+
+```bash
+ping -c3 server01
+ping -c3 server02
+```
+
+
+## Set Up SSH Key-Based Authentication
+
+Generate an SSH key pair:
+
+```bash
+ssh-keygen
+# Accept defaults and leave passphrase empty
+```
+
+Copy the public key to the remote servers:
+
+```bash
+ssh-copy-id server01
+ssh-copy-id server02
+```
+
+To verify, ssh into each server:
+
+```bash
+ssh server01
+# prompt changes to server01
+
+ssh server02
+# prompt changes to server02
+```
+
+
+## Run Remote Commands Without Interactive Login
+
+Basic usage:
+
+```bash
+ssh server01 hostname
+# output: server01
+
+ssh server02 uptime
+# output: 17:21:39 up  7:11,  1 user,  load average: 0.02, 0.04, 0.01
+```
+
+Loop through servers:
+
+```bash
+for N in 1 2; do
+  ssh server0$N hostname
+done
+
+# output:
+server01
+server02
+```
+
+Using a file:
+
+```bash
+cat > servers <<EOF
+server01
+server02
+EOF
+
+for SERVER in $(cat servers); do
+  ssh $SERVER hostname
+  ssh $SERVER uptime
+done
+
+# output:
+server01
+17:27:53 up  7:11,  1 user,  load average: 0.03, 0.04, 0.01
+server02
+17:27:53 up  7:11,  1 user,  load average: 0.02, 0.04, 0.01
+```
+
+
+## Quoting Matters in SSH Commands
+
+Incorrect:
+
+```bash
+ssh server01 hostname ; hostname
+# output:
+server01
+admin01
+
+# Second `hostname` runs locally
+```
+
+Correct:
+
+```bash
+ssh server01 'hostname ; hostname'
+# output:
+server01
+server01
+
+# Both commands run remotely
+```
+
+
+## Variable Usage in SSH
+
+```bash
+CMD1='hostname'
+CMD2='uptime'
+
+ssh server01 "$CMD1 ; $CMD2"
+
+#output:
+server01
+17:31:53 up  7:11,  1 user,  load average: 0.03, 0.04, 0.01
+```
+
+
+## Remote Piping
+
+Entire pipeline runs remotely:
+
+```bash
+ssh server01 'ps -ef | head -3'
+```
+
+Head runs locally (not ideal):
+
+```bash
+ssh server01 ps -ef | head -3
+```
+
+
+## SSH Exit Status
+
+SSH exits with the status of the last remote command or `255` if SSH failed.
+
+Example:
+
+```bash
+ssh server03 uptime
+# ssh: Could not resolve hostname
+echo $?   # 255
+
+ssh server02 hostname
+echo $?   # 0
+```
+
+### Understand `true` and `false`
+
+```bash
+ssh server01 'false | true'
+echo $?   # 0
+
+ssh server01 'true | false'
+echo $?   # 1
+```
+
+### Use `pipefail` for strict checks
+
+```bash
+ssh server01 'set -o pipefail; false | true'
+echo $?   # 1
+```
+
+
+## One-Way Trust Model
+
+- SSH key setup allows `admin01` to connect to `server01` and `server02`.
+- Reverse isn't configured by default.
+- To enable reverse, repeat SSH key setup in reverse direction.
+
+
+## Example: Running a Command with `sudo`
+
+```bash
+ssh server01 sudo id
+# output: uid=0(root) gid=0(root) groups=0(root)
+
+# displays root user of remote system
+```
+
+> **Remember**: SSH runs as the current user. sudo is evaluated remotely.
+
+```bash
+sudo ssh server01 id
+# output: uid=0(root) gid=0(root) groups=0(root)
+
+# displays root user of local system
+```
