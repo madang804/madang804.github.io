@@ -14,13 +14,15 @@
 
 # Welcome to my GitHub Project Site
 
-Please click the links to explore my projects and study guides.
 
-| Projects                                                                             | Description                                     |
-| -------------------------------------------------------------------------------------| ----------------------------------------------- |
-| ![weather-app-terraform](https://github.com/madang804/weather-app-terraform)         | A weather application deployed using Terraform. |
+### Please click the links to explore my projects and study guides.
 
 
-| Study Guides                                                                         | Description                                     |
-| -------------------------------------------------------------------------------------| ----------------------------------------------- |
-| ![bash-Scripting](https://github.com/madang804/madang804.github.io/bash-scripting)   | A study guide for Bash scripting.               |
+| Projects                                                                             | Description                                                        |
+| -------------------------------------------------------------------------------------| ------------------------------------------------------------------ |
+| ![https://github.com/madang804/weather-app-terraform](weather-app-terraform)         | A weather application deployed using Terraform.                    |
+
+
+| Study Guides                                                                         | Description                                                        |
+| -------------------------------------------------------------------------------------| ------------------------------------------------------------------ |
+| ![https://madang804.github.io/bash-scripting](bash-scripting)                        | A study guide for Bash scripting.                                  |
