@@ -18,11 +18,14 @@
 ### Please click the links to explore my projects and study guides.
 
 
-| Projects                                                                             | Description                                                        |
-| -------------------------------------------------------------------------------------| ------------------------------------------------------------------ |
-| [weather-app-terraform](https://github.com/madang804/weather-app-terraform)         | A weather application deployed using Terraform.                    |
+| <div style="width:500px">Projects</div>                                              | <div style="width:500px">Description</div>                       |
+| -------------------------------------------------------------------------------------| -----------------------------------------------------------------|
+| [weather-app-terraform](https://github.com/madang804/weather-app-terraform)          | Weather application deployed using Terraform.                    |
 
 
-| Study Guides                                                                         | Description                                                        |
-| -------------------------------------------------------------------------------------| ------------------------------------------------------------------ |
-| [bash-scripting](https://madang804.github.io/bash-scripting)                        | A study guide for Bash scripting.                                  |
+
+| <div style="width:500px">Study Guides</div>                                          | <div style="width:500px">Description</div>                       |
+| -------------------------------------------------------------------------------------| -----------------------------------------------------------------|
+| [bash-scripting](https://madang804.github.io/bash-scripting)                         | Study guide for Bash scripting.                                  |
+| -------------------------------------------------------------------------------------| -----------------------------------------------------------------|
+| [docker](https://madang804.github.io/docker)                                         | Study guide for Docker                                           |

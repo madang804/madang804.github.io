@@ -20,6 +20,7 @@
 19. [Sort, Uniq and WC Command](#sort-uniq-and-wc-command)
 20. [SED — Stream Editor](#sed--stream-editor)
 21. [Configuring a Mini Network and Scripting for Remote Systems](#configuring-a-mini-network-and-scripting-for-remote-systems) 
+
 ---
 
 # Shell Built-ins and Variables
