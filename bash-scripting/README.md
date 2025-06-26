@@ -1563,3 +1563,284 @@ NUM=$(expr 2 + 3)  # 5
 ```
 
 ---
+
+# Finding Files in Linux
+
+
+## Checking if a Command Exists
+
+The `userdel` command deletes a user from the system. If it's not found in your path:
+
+```bash
+type -a userdel
+# Output: -bash: type: userdel: not found
+
+which userdel
+# Output: /usr/bin/which: no userdel in (your $PATH)
+```
+
+This means:
+
+- The command might not exist
+- Or it's located outside your current `$PATH`
+
+
+## Using `locate` to Find Files
+
+`locate` searches an indexed database created by `updatedb`. It's fast but not always up to date.
+
+```bash
+locate userdel
+# Output: /usr/sbin/userdel
+```
+
+Create a new `userdel` custom file and locate it:
+
+```bash
+touch ~/userdel
+locate userdel
+# File won't show up
+```
+
+Force update the index:
+
+```bash
+sudo updatedb
+locate userdel
+# Output now includes: /home/youruser/userdel
+```
+
+Filter `locate` results to narrow the search:
+
+```bash
+locate userdel | grep bin
+# Output: /usr/sbin/userdel
+```
+
+
+## Permissions Matter
+
+Some files may not appear without elevated privileges:
+
+```bash
+locate .bashrc
+# Limited results
+
+sudo locate .bashrc
+# Full list including /root/.bashrc
+```
+
+Try accessing a file directly:
+
+```bash
+ls -l /root/.bashrc
+# Output: Permission denied
+
+sudo !!
+# Now it shows file details
+```
+
+
+## Manual Search Using Directory Knowledge
+
+If `locate` isn’t available, check common locations:
+
+```bash
+ls -ld /*bin
+# Output:
+# /bin -> /usr/bin
+# /sbin -> /usr/sbin
+```
+
+Search in likely directories:
+
+```bash
+ls -l /usr/bin/userdel
+# No such file
+
+ls -l /usr/sbin/userdel
+# File found
+```
+
+- System admin tools usually live in `/sbin` or `/usr/sbin`
+- General user commands live in `/bin` or `/usr/bin`
+
+
+## Using `find` for Real-Time Searching
+
+Unlike `locate`, `find` searches live file systems:
+
+```bash
+find /usr/bin/
+# Lists all files recursively
+
+find /usr/sbin/ -name userdel
+# Exact file search
+```
+
+Search the entire system:
+
+```bash
+find /usr/bin/
+find / -name userdel
+# May show permission errors
+
+find / -name userdel 2>/dev/null
+# Suppresses errors
+```
+
+With root access:
+
+```bash
+sudo find / -name userdel
+# Guaranteed complete result
+```
+
+
+## Switching to Root User
+
+Some commands may exist only in root’s path:
+
+```bash
+su -
+# Enter root password
+
+type -a userdel
+# Output:
+# userdel is /sbin/userdel
+# userdel is /usr/sbin/userdel
+```
+
+This confirms the command exists even if your normal user can't find it due to `$PATH` limitations.
+
+---
+
+# `userdel` Command in Linux
+
+The `userdel` command deletes a user account and optionally removes related files.
+
+
+## Basic Syntax
+
+```bash
+userdel [options] LOGIN
+```
+
+Common Options:
+
+- `-r` : Removes the user's home directory and mail spool.
+- `-f` : Forces removal even if the user is currently logged in or their home directory is shared.
+
+> Use `-f` with caution. Shared home directories (though uncommon) may contain data used by other accounts.
+
+
+## Example: Delete a User
+
+```bash
+sudo userdel madan
+```
+
+Check if the user still exists:
+
+```bash
+id madan
+# Output: id: madan: no such user
+```
+
+Check the home directory:
+
+```bash
+ls -l /home
+```
+
+Sample output:
+
+```bash
+drwx------ 2 kumar kumar 4096 Jan 23 16:58 kumar
+drwx------ 2 1001  1001  4096 Jan 23 16:58 madan
+```
+
+Even though `madan` was deleted, the home directory remains. The user and group show as `1001` because the account no longer exists.
+
+> If you see numeric UID/GID in `ls` output, it usually means the user or group was deleted.
+
+
+## Understanding UIDs
+
+Root always has UID 0:
+
+```bash
+id -u root
+# Output: 0
+```
+
+System/application accounts usually have UIDs below `1000`. e.g., check sshd UID:
+
+```bash
+id -u sshd
+# Output: 74
+```
+
+Regular users start at UID `1000`. e.g., check current user's UID:
+
+```bash
+id -u
+# Output: 1000
+```
+
+These UID ranges are configured in `/etc/login.defs`.
+
+
+## Check UID Ranges
+
+Open `/etc/login.defs`:
+
+```bash
+nano /etc/login.defs
+```
+
+Look for:
+
+Open `/etc/login.defs`:
+
+```bash
+UID_MIN 1000
+UID_MAX 60000
+
+SYS_UID_MIN 201
+SYS_UID_MAX 999
+```
+
+This defines:
+
+- Regular users: UID `1000–60000`
+- System users: UID `201–999`
+
+> Always verify a user's UID before deletion. Avoid removing system accounts unless you’re sure.
+
+
+## Example: Delete User and Remove Home Directory
+
+Check UID of the user:
+
+```bash
+id -u kumar
+# Output: 1002
+```
+
+Delete user and home directory:
+
+```bash
+sudo userdel -r kumar
+```
+
+Verify deletion:
+
+```bash
+id -u kumar
+# Output: id: kumar: no such user
+
+ls -l /home/kumar
+# Output: ls: cannot access /home/kumar: No such file or directory
+```
+
