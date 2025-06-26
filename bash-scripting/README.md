@@ -2561,4 +2561,116 @@ Result:
 7755
 ```
 
+---
+
+# `sort`, `uniq`, and `wc` Command Notes
+
+This guide explains how to use `sort`, `uniq`, and `wc` in Linux for text processing and data analysis.
+
+
+## `sort`
+
+Sorts lines of text files.
+
+### Basic alphabetical sort
+
+```bash
+sort /etc/passwd
+```
+
+### Reverse order
+
+```bash
+sort -r /etc/passwd
+```
+
+### Sort numerically
+
+```bash
+cut -d ':' -f 3 /etc/passwd | sort -n
+```
+
+### Sort human-readable sizes
+
+```bash
+du -h /var | sort -h
+```
+
+### Remove duplicate lines
+
+```bash
+sort -u filename
+```
+
+
+## `uniq`
+
+Removes duplicate adjacent lines in a file. Works best with sorted input.
+
+### Basic usage
+
+```bash
+sort filename | uniq
+```
+
+### Count occurrences
+
+```bash
+cat /var/log/messages | awk '{print $5}' | sort | uniq -c
+```
+
+Example use case:
+
+To find the most frequent IPs hitting your web server:
+
+```bash
+cat access.log | awk '{print $1}' | sort | uniq -c | sort -nr
+```
+
+
+## `wc`
+
+Counts lines, words, and characters in files.
+
+### Full output:
+
+```bash
+wc /etc/passwd
+# output: 25 50 1245 /etc/passwd
+```
+
+- 25 lines
+- 50 words
+- 1245 characters
+
+### Word count only
+
+```bash
+wc -w /etc/passwd
+```
+
+### Byte/character count
+
+```bash
+wc -c /etc/passwd
+```
+
+### Line count
+
+```bash
+wc -l /etc/passwd
+```
+
+
+## Sorting with a Specific Field
+
+Use `-t` to set a delimiter and `-k` to define the sort field.
+
+### Example: Sort `/etc/passwd` by UID (3rd field, colon-separated)
+
+```bash
+sort -t ':' -k 3 -n /etc/passwd
+```
+
+---
 

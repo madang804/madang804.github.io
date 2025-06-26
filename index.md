@@ -20,9 +20,9 @@
 
 | Projects                                                                             | Description                                                        |
 | -------------------------------------------------------------------------------------| ------------------------------------------------------------------ |
-| ![weather-app-terraform](https://github.com/madang804/weather-app-terraform)         | A weather application deployed using Terraform.                    |
+| [weather-app-terraform](https://github.com/madang804/weather-app-terraform)         | A weather application deployed using Terraform.                    |
 
 
 | Study Guides                                                                         | Description                                                        |
 | -------------------------------------------------------------------------------------| ------------------------------------------------------------------ |
-| ![bash-scripting](https://madang804.github.io/bash-scripting)                        | A study guide for Bash scripting.                                  |
+| [bash-scripting](https://madang804.github.io/bash-scripting)                        | A study guide for Bash scripting.                                  |
