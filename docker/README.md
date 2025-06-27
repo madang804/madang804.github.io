@@ -5,10 +5,8 @@
 4. [Exposing Containers to the Public Network](#exposing-containers-to-the-public-network)
 5. [Connecting to Running Containers and Managing Container Output](#connecting-to-running-containers-and-managing-container-output)
 6. [Building Images with Dockerfiles](#building-images-with-dockerfiles)
-7. []()
-8. []()
-9. []()
-10. []()
+7. [Managing Docker Volumes](#managing-docker-volumes)
+8. [Docker Networking](#docker-networking)
 
 ---
 
@@ -1334,4 +1332,223 @@ Filesystem Size  Used  Avail Use% Mounted on
 tmpfs      256M  0     256M  0%   /root/volume
 ...
 ```
+
+
+## Remove Docker Volume
+
+Ensure to stop container that has volume attached, before removing the volume.
+
+```bash
+docker volume rm <volume>
+```
+
+To remove all unused volume:
+
+```bash
+docker volume prune
+```
+
+---
+
+# Docker Networking
+
+Docker leverages the Linux kernel's `netfilter` system via `iptables`. In newer systems, `nftables` may eventually replace this. Docker adapts to whatever networking mechanism the Linux kernel provides.
+
+
+## Launching a Basic Web Server with Port Mapping
+
+```bash
+docker run -dit -p 8080:80 php:apache
+```
+
+This starts a container using the `php:apache` image. This image includes Apache with `mod_php`.
+
+Check the container status:
+
+```bash
+docker ps
+
+# output:
+CONTAINER ID   IMAGE        COMMAND                PORTS                NAMES
+90c1116fcdcf   php:apache   "docker-php-entrypoi"  0.0.0.0:8080->80/tcp pensive_gould
+```
+
+
+## Inspect Docker's iptables Configuration
+
+```bash
+iptables -nL DOCKER
+
+# output:
+Chain DOCKER (1 references)
+target  prot opt source      destination
+ACCEPT  tcp  --  0.0.0.0/0   172.17.0.2  tcp dpt:80
+```
+
+- Docker assigns a non-routable IP (e.g. `172.17.0.2`) to each container.
+- Port 8080 on the host maps to port 80 in the container.
+
+Test internal and external routing:
+
+```bash
+curl http://172.17.0.2       # container internal IP
+curl http://127.0.0.1:8080   # host IP with mapped port
+```
+
+Stop the container:
+
+```bash
+docker stop pensive_gould
+```
+
+
+## Host Networking Mode
+
+To run a container using the host's networking stack:
+
+```bash
+docker run -dit --network host php:apache
+```
+
+Check iptables:
+
+```bash
+iptables -nL DOCKER
+
+# output is empty as the container shares the host’s network stack
+```
+
+Test:
+
+```bash
+curl http://127.0.0.1
+
+# output: access to apache server
+```
+
+Use `--network hos`t only when absolutely necessary. It removes network isolation.
+
+
+## List Docker Networks
+
+```bash
+docker network ls
+
+# output:
+NETWORK ID     NAME     DRIVER    SCOPE
+6ca35f7a7b02   bridge   bridge    local
+9b2863b1f2e1   host     host      local
+9bf18b382a88   none     null      local
+```
+
+- The default `bridge` network is used unless specified otherwise.
+- Containers on the same bridge can communicate.
+
+
+## Inspect a Network
+
+```bash
+docker network inspect bridge
+```
+
+Launch a container and inspect:
+
+```bash
+docker run --name w1 -dit php:apache
+docker network inspect bridge
+
+# output:
+"Containers": {
+  "fbf5ded6...": {
+    "Name": "w1",
+    "MacAddress": "02:42:ac:11:00:02",
+    "IPv4Address": "172.17.0.2/16"
+  }
+}
+```
+
+Launch another:
+
+```bash
+docker run --name w2 -dit php:apache
+docker network inspect bridge
+
+# output:
+"Containers": {
+  "fbf5ded6...": {
+    "Name": "w2",
+    "MacAddress": "02:42:ac:11:00:03",
+    "IPv4Address": "172.17.0.3/16"
+  }
+}
+```
+
+Now you'll see both `w1` and `w2` with separate IPs (e.g. `.2` and `.3`).
+
+
+## Container-to-Container Communication
+
+```bash
+docker exec -it w1 bash
+curl http://172.17.0.3
+
+# output: HTML return from w2
+```
+
+Exit and check logs:
+
+```bash
+docker logs w2
+
+# output:
+172.17.0.2 - - [date] "GET / HTTP/1.1" 403 "-" "curl/7.64.0"
+```
+
+This confirms communication between `w1` and `w2` via the default bridge network.
+
+
+## Isolated Networks for Application Groups
+
+Create a custom bridge network:
+
+```bash
+docker network create blog
+```
+
+Create a volume:
+
+```bash
+docker volume create blog_web_data
+```
+
+Run a container in the `blog` network and attach the `blog_web_data` volume:
+
+```bash
+docker run --name web --network blog -p 80:80 \
+  --mount src=blog_web_data,dst=/var/www/html \
+  -dit php:apache
+```
+
+Inspect:
+
+```bash
+docker network inspect blog
+
+# output:
+"Containers": {
+  "153be86f...": {
+    "Name": "web",
+    "IPv4Address": "172.18.0.2/16"
+  }
+}
+```
+
+Test network isolation:
+
+```bash
+docker exec -it w1 bash
+curl http://172.18.0.2
+```
+
+`curl` should fail since `w1` is not on the `blog` network.
 
