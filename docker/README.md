@@ -2,9 +2,9 @@
 1. [Docker Basics and Common Commands](#docker-basics-and-common-commands)
 2. [Managing Container Images](#managing-container-images)
 3. [Running Containers](#running-containers)
-4. []()
-5. []()
-6. []()
+4. [Exposing Containers to the Public Network](#exposing-containers-to-the-public-network)
+5. [Connecting to Running Containers and Managing Container Output](#connecting-to-running-containers-and-managing-container-output)
+6. [Building Images with Dockerfiles](#building-images-with-dockerfiles)
 7. []()
 8. []()
 9. []()
@@ -540,3 +540,798 @@ Clean up	            |`docker system prune`
 Auto-remove after run   |`docker run --rm <image>`
 ------------------------|-------------------------
 View logs	            |`docker logs <name>`
+
+---
+
+# Exposing Containers to the Public Network
+
+We'll run a container and open a specific port so we can access its web server in a browser.
+
+For command syntax or tips for a specific image, check its page on [Docker Hub](https://hub.docker.com). Prefer official images for safety.
+
+
+## Running a Container and Exposing a Port
+
+Example using the [nginx official image](https://hub.docker.com/_/nginx):
+
+```bash
+docker run --name our_nginx -d -p 8080:80 nginx
+
+# output:
+Unable to find image 'nginx:latest' locally
+latest: Pulling from library/nginx
+...
+Status: Downloaded newer image for nginx:latest
+<container_id>
+```
+
+### What This Does:
+
+- `-d`: Runs container in detached mode (in the background)
+- `-p 8080:80`: Maps port 8080 on the host to port 80 in the container
+- `nginx`: Pulls the nginx:latest image if it's not already present
+
+### Port Mapping:
+
+```bash
+docker ps
+
+# output:
+CONTAINER ID   IMAGE    COMMAND                 CREATED         STATUS        PORTS                 NAMES
+e7c485c54894   nginx   "nginx -g 'daemon of..." 30 seconds ago  Up 28 seconds 0.0.0.0:8080->80/tcp  our_nginx
+```
+
+Explanation:
+
+- `8080` = host machine (public)
+- `80` = container's internal web server port
+- `0.0.0.0:8080->80/tcp` = all interfaces on the host are listening on port 8080 and forwarding to port 80 inside the container
+
+
+## Accesss the Web Server
+
+### From local machine:
+
+```bash
+curl http://localhost:8080
+```
+
+### Access the Web Server from another device on the network:
+
+Use the Docker host's IP:
+
+```bash
+http://192.168.1.83:8080
+```
+
+
+## View Web Access Logs
+
+```bash
+docker logs our_nginx
+```
+
+- Shows who accessed the server
+- Useful for debugging or monitoring
+
+
+## Stop the Container
+
+```bash
+docker stop our_nginx
+```
+
+
+## Serve Your Own Web Content
+
+Create a directory and an index.html file:
+
+```bash
+mkdir webpages
+echo 'Hi from inside the container!' > ./webpages/index.html
+```
+
+Run a new container and mount the directory:
+
+```bash
+mkdir webpages
+docker run -p 8080:80 --name another_nginx -v ${PWD}/webpages:/usr/share/nginx/html:ro -d nginx
+```
+
+### Explanation:
+
+- `${PWD}`: Current directory (bash variable)
+- `-v`: Volume mount
+    - Format: `host_path:container_path[:options]`
+    - `ro`: Read-only inside container
+
+The container now serves your custom HTML file.
+
+
+## Test It
+
+### With `curl`:
+
+```bash
+curl http://localhost:8080
+
+# output:
+Hi from inside the container!
+```
+
+---
+
+
+# Connecting to Running Containers and Managing Container Output
+
+It's uncommon to SSH into a container.
+
+Instead, you usually:
+
+- Adjust the Dockerfile
+- Rebuild the image
+- Redeploy the container
+
+Still, there are times when you want to interactively inspect a running container.
+
+
+## Run a Container with Shell Access
+
+```bash
+docker run -it --name apache httpd /bin/bash
+
+# output:
+root@60457c088849:/usr/local/apache2#
+```
+
+This command:
+
+- Uses `-it` for interactive shell
+- Skips `-d` to keep the container in the foreground
+- Starts with `/bin/bash` as the default command
+
+Example interaction:
+
+```bash
+root@60457c088849:/usr/local/apache2# pwd
+/usr/local/apache2
+root@60457c088849:/usr/local/apache2# ls
+bin  build  cgi-bin  conf  error  htdocs  icons  include  logs  modules
+```
+
+Exit the container using `exit` or `Ctrl+D`.
+
+
+## Check Container Status
+
+```bash
+docker ps
+```
+
+No container appears because:
+
+- The container exited when `/bin/bash` ended
+- It was not detached (`-d` not used)
+
+
+## Run Container in Detached Mode
+
+```bash
+docker run -dit --name second_apache httpd /bin/bash
+```
+
+Container is running in the background. 
+
+Note: Running `/bin/bash` in detached mode isn't useful for interaction
+
+
+## Bash vs. Sh in Containers
+
+Some images (like Alpine Linux) don’t use bash
+
+Use `/bin/sh` instead:
+
+```bash
+docker exec -it container_name /bin/sh
+```
+
+Or you can also use `sh`, as long as `sh` is in the container's `$PATH`.
+
+```bash
+docker exec -it container_name sh
+```
+
+
+## Use `docker exec` to Enter Running Containers
+
+```bash
+docker run -dit httpd
+docker exec -it <container_id_or_name> /bin/bash
+```
+
+Without `-it`, the shell will run and immediately exit.
+
+
+## Use `docker exec` to Run Commands Inside
+
+Start a new container:
+
+```bash
+docker run -dit --name execution httpd
+```
+
+Create a file inside the container:
+
+```bash
+docker exec -d execution touch /root/hello
+```
+
+Check from inside the container:
+
+```bash
+docker exec -it execution bash
+
+# Inside container:
+ls /root
+
+# output:
+hello
+```
+
+Or directly from host:
+
+```bash
+docker exec -it execution ls /root
+
+# output:
+hello
+```
+
+
+## Installing Tools Inside Containers
+
+Many images are minimal and lack common tools.
+
+You can install packages temporarily in a running container:
+
+```bash
+apt update && apt install -y <package>
+```
+
+But
+
+- This only affects the current container
+- You must build a new image to persist changes
+
+
+## Viewing Processes Inside a Container
+
+You might find `ps` missing inside the container.
+
+Use `docker top` from outside the  container instead:
+
+```bash
+docker top <container name or id>
+
+# output:
+UID     PID   PPID  C STIME TTY   TIME     CMD
+root    11673 11646 0 16:31 pts/0 00:00:00 httpd -DFOREGROUND
+daemon  11727 11673 0 16:31 pts/0 00:00:00 httpd -DFOREGROUND
+```
+
+This avoids needing to install `procps` inside the container.
+
+---
+
+# Docker Registries
+
+Docker registries store and distribute Docker images.
+
+
+## Key Concepts
+
+- Docker Hub is the default registry.
+- A registry holds multiple repositories.
+- A repository contains one or more images, each identified by a tag.
+- Tags often represent versions or variations (e.g., Alpine vs Debian base images).
+
+## Pulling Images
+
+Use `docker pull` to download images.
+
+```bash
+docker pull docker.io/ubuntu:bionic
+
+# output:
+bionic: Pulling from library/ubuntu
+...
+Status: Downloaded newer image for ubuntu:bionic
+docker.io/library/ubuntu:bionic
+```
+
+Same command, simplified:
+
+```bash
+docker pull ubuntu:bionic
+```
+
+You can also use other DNS formats:
+
+```bash
+docker pull registry.hub.docker.com/library/ubuntu:bionic
+```
+
+
+## Viewing Pulled Images
+
+```bash
+docker images
+
+# output:
+REPOSITORY                                 TAG      IMAGE ID       CREATED         SIZE
+ubuntu                                     bionic   a2a15febcdf3   11 days ago     64.2MB
+registry.hub.docker.com/library/ubuntu     bionic   a2a15febcdf3   11 days ago     64.2MB
+```
+
+- Same `IMAGE ID` means same image.
+- Different repository names affect how you reference them.
+
+
+## Running Images by Repository
+
+```bash
+docker run -dit registry.hub.docker.com/library/ubuntu:bionic
+```
+
+This shows that image names follow this format:
+
+```bash
+registry_address/repository/image:tag
+```
+
+For official images, library/ is implied and usually hidden:
+
+```bash
+docker run ubuntu:bionic
+```
+
+
+## Removing Images
+
+Delete a specific image:
+
+```bash
+docker rmi ubuntu:bionic
+```
+
+Run again:
+
+```bash
+docker run ubuntu:bionic
+```
+
+Docker will pull it again if not found locally.
+
+
+## Example: Non-Official Images
+
+```bash
+docker pull mysql/mysql-server
+
+# output:
+Using default tag: latest
+latest: Pulling from mysql/mysql-server
+...
+Status: Downloaded newer image for mysql/mysql-server:latest
+docker.io/mysql/mysql-server:latest
+```
+
+- Namespace: `mysql`
+- Repository: `mysql-server`
+- Tag: `latest` (default)
+
+Another example:
+
+```bash
+docker pull docker pull madang804/flask-app:v1
+
+# output:
+v1: Pulling from madang804/flask-app
+...
+Status: Downloaded newer image for madang804/flask-app:v1
+docker.io/madang804/flask-app:v1
+```
+
+- Namespace: `madang804` (Docker Hub username)
+- Repository: `flask-app`
+- Tag: `v1`
+
+### Naming Format
+
+```bash
+docker_username/repository:tag
+```
+
+
+## Security Risks
+
+- Official images still contain known vulnerabilities.
+- Unofficial images may include malware.
+- Be cautious. Isolate or build your own images when possible.
+
+
+## Other Popular Registries
+
+- Amazon ECR: `*.ecr.amazonaws.com`
+- Google GCR: `gcr.io`
+- Red Hat Quay: `quay.io`
+
+
+## Private Registries
+
+- Businesses often use private registries for better control.
+- Docker Hub supports private repositories.
+- Set up with authentication and access control.
+
+
+## Logging Into Docker Hub
+
+```bash
+docker login
+Username: <username>
+Password: <password>
+Login Succeeded
+```
+
+To avoid password warnings:
+
+- Use a credential helper.
+- Don’t use `-p` on command line if possible.
+
+### Login Syntax
+
+```bash
+docker login -u <username> [registry]
+```
+
+If no registry is provided, Docker Hub is used by default.
+
+---
+
+# Building Images with Dockerfiles
+
+Each instruction in a Dockerfile creates a separate layer in the final image.
+
+
+## Key Dockerfile Instructions
+
+- **FROM**: Defines the base image.
+- **CMD**: Sets default command arguments or the default command itself.
+- **RUN**: Executes commands during image build.
+- **EXPOSE**: Opens network ports.
+- **VOLUME**: Declares shared storage locations.
+- **COPY**: Copies files from local disk to the image.
+- **LABEL**: Adds metadata to the image. (deprecated)
+- **ENV**: Defines environment variables.
+- **ENTRYPOINT**: Sets the main executable to run when the container starts.
+
+
+## Simple Dockerfile
+
+```dockerfile
+FROM debian:latest
+LABEL maintainer="Madan Gurung"
+ENTRYPOINT ["/bin/ping"]
+CMD ["www.docker.com"]
+```
+
+### Breakdown:
+
+- `FROM debian:latest`
+Uses the latest Debian image.
+- `LABEL`
+Adds metadata about the author/maintainer.
+- `ENTRYPOINT`
+Runs /bin/ping when the container starts.
+- `CMD`
+Supplies the default argument (www.docker.com) to ping.
+
+Resulting execution:
+
+`/bin/ping www.docker.com`
+
+
+## Build the Image
+
+```bash
+docker build -t madang804/dockerping:latest .
+```
+
+- `-t` adds a tag/name.
+- Format: `dockerhub-username/image-name:tag`
+- `.` specifies current directory for Dockerfile.
+
+
+## View Images
+
+```bash
+docker images
+
+# output:
+REPOSITORY            TAG       IMAGE ID       CREATED          SIZE
+madang804/dockerping  latest    bc80449d4a5b   19 seconds ago   114MB
+debian                latest    85c4fd36a543   2 weeks ago      114MB
+```
+
+
+## Push to Docker Hub
+
+```bash
+docker images
+
+# output:
+docker login
+docker push madang804/dockerping:latest
+```
+
+
+## Override CMD
+
+```bash
+docker run madang804/dockerping:latest
+
+# output:
+64 bytes from server-13-33-231-30.lax3.r.cloudfront.net (13.33.231.30): icmp_seq=1 ttl=61 time=78.7 ms
+64 bytes from server-13-33-231-30.lax3.r.cloudfront.net (13.33.231.30): icmp_seq=2 ttl=61 time=76.1 ms
+
+# override CMD
+docker run madang/dockerping google.com
+
+# output:
+64 bytes from lax17s34-in-f14.1e100.net (172.217.11.78): icmpt_seq=1 ttl=61 time=119 ms
+64 bytes from lax17s34-in-f14.1e100.net (172.217.11.78): icmpt_seq=2 ttl=61 time=77.2 ms
+```
+
+- First attempt, ping `docker.com`
+- Second attempt, ping `google.com`
+
+
+## Override ENTRYPOINT
+
+```bash
+docker run --entrypoint /bin/ls -it madang804/dockerping:latest $PWD
+```
+
+- This is one way to work with image that has an ENTRYPOINT.
+- The better alternative is to build image with `CMD` instruction and without the `ENTRYPOINT`.
+
+
+### Dockerfile: `Dockerfile-allow-override`
+
+```dockerfile
+FROM debian:latest
+LABEL maintainer="Madan Gurung"
+RUN apt update && \
+    apt install -y curl && \
+    apt clean
+CMD ["/bin/bash"]
+```
+
+### Build the Image
+
+```bash
+docker build -t madang804/nettools:allow-override -f Dockerfile-allow-override
+```
+
+`-f <Dockerfile>` identifies dockerfile that doesn't conform to standard naming convention `Dockerfile`.
+
+### Run the Image Overriding Default CMD
+
+```bash
+docker run -it madang804/nettools:allow-override curl google.com
+```
+
+---
+
+# Managing Docker Volumes
+
+Docker containers are designed to be:
+
+- Small
+- Portable
+- Disposable
+
+Images usually include only what's necessary to run a service.
+
+> **Avoid storing important data inside containers.**
+
+Use volumes to:
+
+- Persist data across container restarts
+- Share data between multiple containers
+
+
+## Volume Types and Mounting Methods
+
+### Legacy Syntax
+
+```bash
+docker run -v /dbdir:/var/lib/mysql -d mariadb
+docker run --volume /dbdir:/var/lib/mysql -d mariadb
+```
+
+### Preferred Syntax (`--mount`)
+
+```bash
+docker run -d --name container-name \
+  --mount source=volume-name,destination=/container/path image-name
+```
+
+
+## Docker Volume Commands
+
+### Create a Volume
+
+```bash
+docker volume create <volume>
+```
+
+### List Volumes
+
+```bash
+docker volume ls
+```
+
+### Delete a Volume
+
+```bash
+docker volume rm <volume>
+```
+
+
+## Inspecting a Volume
+
+```bash
+docker volume inspect <volume>
+
+# output:
+[
+  {
+    "Name": "<volume>",
+    "Mountpoint": "/var/lib/docker/volumes/<volume>/_data",
+    "Driver": "local",
+    "Scope": "local"
+  }
+]
+```
+
+
+## Mounting a Volume in a Container
+
+```bash
+docker run -d --name withvolume \
+  --mount source=mydata1,destination=/root/volume nginx
+```
+
+Avoid spaces in `--mount`. You can also use:
+
+- `src` instead of `source`
+- `dst` or target instead of `destination`
+
+Inspect the container’s mounts:
+
+```bash
+docker inspect withvolume | grep Mounts -A 10
+
+# output:
+"Mounts":[
+  {
+    "Type": "volume",
+    "Name": "mydata1",
+    "Source": "/var/lib/docker/volumes/mydata1/_data",
+    "Destination": "/root/volume",
+    ...
+  }
+```
+
+
+## Add Data to Volume from Host
+
+```bash
+echo 'Hello from the mydata1 volume!' > /var/lib/docker/volumes/mydata1/_data/index.html
+```
+
+View it from inside the container:
+
+```bash
+docker exec -it withvolume bash
+cd /root/volume
+cat index.html
+
+# output:
+Hello from the mydata1 volume!
+```
+
+
+## Mount a Read-Only Volume
+
+```bash
+docker run -d --name readcontainer \
+  --mount src=newestvolume,dst=/usr/share/nginx/html,readonly nginx
+```
+
+You can also use shorthand `ro` for `readonly`.
+
+### Check read-only status:
+
+```bash
+docker inspect readcontainer | grep Mounts -A 10
+
+# output:
+"Mounts":[
+  {
+    "Type": "volume",
+    "Name": "newestvolume",
+    "Source": "/var/lib/docker/volumes/newestvolume/_data",
+    "Destination": "/usr/share/nginx/html",
+    "RW": false,
+    ...
+  }
+```
+
+### Test inside container:
+
+```bash
+docker exec -it readcontainer bash
+touch /usr/share/nginx/html/test
+
+# output:
+# touch: cannot touch '/usr/share/nginx/html/test': Read-only file system
+```
+
+You can grant read-write to one container and read-only to another using the same volume.
+
+
+## Ephemeral (tmpfs) Volumes
+
+- Temporary in-memory volumes destroys when the container stops.
+- `tmpfs` volumes cannot be shared between containers.
+
+```bash
+docker run -dit --name ephemeral \
+  --mount type=tmpfs,destination=/root/volume nginx
+```
+
+### Inspect:
+
+```bash
+docker inspect ephemeral | grep Mounts -A 10
+
+# output:
+"Mounts":[
+  {
+    "Type": "tmpfs",
+    "Source": "",
+    "Destination": "/root/volume",
+    ...
+  }
+```
+
+### Add size limit (e.g. 256MB):
+
+```bash
+docker run -dit --name ephemeral2 \
+  --mount type=tmpfs,tmpfs-size=256M,dst=/root/volume nginx
+```
+
+### Check tmpfs volume size:
+
+```bash
+docker exec -it ephemeral2 df -h
+
+# output:
+Filesystem Size  Used  Avail Use% Mounted on
+tmpfs      256M  0     256M  0%   /root/volume
+...
+```
+
