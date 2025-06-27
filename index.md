@@ -30,28 +30,36 @@
 | -------------------------------------------------------------------------------------| -----------------------------------------------------------------|
 | [docker](https://madang804.github.io/docker)                                         | Study guide for Docker                                           | -->
 
-<table style="width:500px; table-layout:fixed; border-collapse:collapse;">
+<table style="width:600px; table-layout:fixed; border-collapse:collapse;">
   <tr>
-    <th style="width:150px; border:1px solid #ccc;">Projects</th>
-    <th style="width:350px; border:1px solid #ccc;">Description</th>
+    <th style="width:200px; border:1px solid #ccc; text-align:left;">Projects</th>
+    <th style="width:400px; border:1px solid #ccc; text-align:left;">Description</th>
   </tr>
   <tr>
-    <td style="border:1px solid #ccc;">[weather-app-terraform](https://github.com/madang804/weather-app-terraform)</td>
-    <td style="border:1px solid #ccc;">Weather application deployed using Terraform</td>
+    <td style="border:1px solid #ccc; word-wrap:break-word; text-align:left;">
+      <a href="https://github.com/madang804/weather-app-terraform">weather-app-terraform</a>
+    </td>
+    <td style="border:1px solid #ccc; text-align:left;">Weather application deployed using Terraform</td>
   </tr>
 </table>
 
-<table style="width:500px; table-layout:fixed; border-collapse:collapse;">
+<br/>
+
+<table style="width:600px; table-layout:fixed; border-collapse:collapse;">
   <tr>
-    <th style="width:150px; border:1px solid #ccc;">Study Guides</th>
-    <th style="width:350px; border:1px solid #ccc;">Description</th>
+    <th style="width:200px; border:1px solid #ccc; text-align:left;">Study Guides</th>
+    <th style="width:400px; border:1px solid #ccc; text-align:left;">Description</th>
   </tr>
   <tr>
-    <td style="border:1px solid #ccc;">[bash-scripting](https://madang804.github.io/bash-scripting)</td>
-    <td style="border:1px solid #ccc;">Study guide for Bash scripting</td>
+    <td style="border:1px solid #ccc; word-wrap:break-word; text-align:left;">
+      <a href="https://madang804.github.io/bash-scripting">bash-scripting</a>
+    </td>
+    <td style="border:1px solid #ccc; text-align:left;">Study guide for Bash scripting</td>
   </tr>
   <tr>
-    <td style="border:1px solid #ccc;">[docker](https://madang804.github.io/docker)</td>
-    <td style="border:1px solid #ccc;">Study guide for Docker</td>
+    <td style="border:1px solid #ccc; word-wrap:break-word; text-align:left;">
+      <a href="https://madang804.github.io/docker">docker</a>
+    </td>
+    <td style="border:1px solid #ccc; text-align:left;">Study guide for Docker</td>
   </tr>
 </table>
