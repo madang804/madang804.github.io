@@ -8,6 +8,7 @@
 7. [Viewing Files](#viewing-files)
 8. [Wildcards](#wildcards)
 9. [Input Output and Redirection](#input-output-and-redirection)
+10. [Comparing Files](#comparing-files)
 
 ---
 
@@ -440,3 +441,74 @@ ls files.txt not_here > out.both 2>&1
 
 ---
 
+# Comparing Files
+
+## 1. `diff`
+
+Compare two files line by line.
+
+```bash
+diff <file1> <file2>
+
+# output:
+3c3
+```
+
+- Means line 3 in `file1` changed to line 3 in `file2`.
+
+#### Actions
+
+- `a`: Add
+- `c`: Change
+- `d`: Delete
+
+#### Example
+
+```bash
+3c3
+< old line
+---
+> new line
+```
+
+## 2. `sdiff`
+
+Display a side-by-side comparison.
+
+```bash
+sdiff <file1> <file2>
+```
+
+#### Actions
+
+- `|`: lines differ between files
+- `<`: line exists only in file1
+- `>`: line exists only in file2
+
+#### Example
+
+```bash
+line from file1     | line from file2
+only in file1       <
+                    > only in file2
+```
+
+## 3. `vimdiff`
+
+Visual file comparison using `vim`.
+
+```bash
+vimdiff <file1> <file2>
+```
+
+- Opens both files in split windows
+- Differences are highlighted
+
+#### Common Commands in `vimdiff`
+
+- `Ctrl + w w`: switch between windows
+- `:q`: quit current window
+- `:qa`: quit all windows
+- `:qa!`: force quit without saving changes
+
+---
