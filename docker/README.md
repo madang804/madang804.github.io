@@ -15,10 +15,8 @@
 Docker commands work the same across Linux, macOS, and Windows.
 
 When you run a container:
-
 - If the image already exists, Docker uses it.
 - If not, Docker downloads it from Docker Hub.
-
 
 ## Running a Debian Container
 
@@ -43,7 +41,6 @@ You can use the following to refer to a container:
 - A short prefix of the ID (e.g., `b31`)
 - Or a human-readable name (e.g., `laughing_edison`)
 
-
 ## Docker Run Options
 
 - `-d`: Detached mode (runs in the background)
@@ -51,7 +48,6 @@ You can use the following to refer to a container:
 - `-t`: Allocates a pseudo-TTY (for terminal access)
 
 Together: `-dit` keeps the container alive in the background with interactive shell access.
-
 
 ## Confirming the Container Is Running
 
@@ -71,39 +67,38 @@ Columns:
 - STATUS: Runtime duration
 - NAMES: Auto-generated or user-specified name
 
-
 ## Stopping a Running Container
 
-Using the container ID prefix:
+#### Using the container ID prefix:
 
 ```bash
 docker stop b31
 ```
 
-Using the container name:
+#### Using the container name:
 
 ```bash
 docker stop laughing_edison
 ```
-
 
 ## What Happens Without `-dit`
 
 ```bash
 docker run debian
 docker ps
+
+# output: empty
 ```
 
 - The container starts and exits immediately.
 - No container ID is shown.
 - `docker ps` shows nothing running.
 
-To keep it alive:
+#### To keep it alive:
 
 ```bash
 docker run -dit debian
 ```
-
 
 ## Listing Downloaded Images
 
@@ -114,7 +109,6 @@ docker images
 REPOSITORY   TAG     IMAGE ID       CREATED         SIZE
 debian       latest  00bf7fdd8baf   4 weeks ago     114MB
 ```
-
 
 ## Inspecting a Container
 
@@ -128,7 +122,6 @@ docker inspect 0e0
     - Environment variables
     - Hostname
     - Start command
-
 
 ## Getting Help with Docker
 
@@ -149,7 +142,6 @@ docker image prune --help
 
 ## Image Layering
 
-
 - Docker images use a layered filesystem.
 - Each layer represents changes made to the image (like revision control).
 - Base images (e.g., Debian) can be reused by multiple child images to save space.
@@ -158,10 +150,9 @@ docker image prune --help
     - Smaller image size
     - Faster builds due to better caching
 
-
 ## Inspecting an Image
 
-### Step 1: Pull the Image
+#### Step 1: Pull the Image
 
 ```bash
 docker pull nginx
@@ -177,7 +168,7 @@ Status: Downloaded newer image for nginx:latest
 docker.io/library/nginx:latest
 ```
 
-### Step 2: List Images
+#### Step 2: List Images
 
 ```bash
 docker images
@@ -187,7 +178,7 @@ REPOSITORY   TAG     IMAGE ID       CREATED        SIZE
 nginx        latest  e445ab08b2be   2 weeks ago    126MB
 ```
 
-### Step 3: View Image History
+#### Step 3: View Image History
 
 ```bash
 docker history nginx
@@ -196,12 +187,15 @@ docker history nginx
 - Each line = a layer
 - Some layer hashes may be missing due to build cache not being local
 
-### Step 4: Show Full Image ID
+#### Step 4: Show Full Image ID
 
 ```bash
 docker images --no-trunc
-```
 
+# output:
+REPOSITORY TAG    IMAGE ID                                                                CREATED     SIZE
+nginx      latest sha256:e445ab08b2be8b178655b714f89e5db9504f67defd5c7408a00bade679a50d44 2 weeks ago 126MB
+```
 
 ## Tagging Images
 
@@ -209,7 +203,7 @@ docker images --no-trunc
 - Default tag is `latest`.
 - Tags are similar to Git tags — they point to a specific version.
 
-### Help Command
+#### Help Command
 
 ```bash
 docker tag --help
@@ -218,7 +212,7 @@ docker tag --help
 docker tag SOURCE_IMAGE[:TAG] TARGET_IMAGE[:TAG]
 ```
 
-### Create a Custom Tag
+#### Create a Custom Tag
 
 ```bash
 docker tag nginx:latest nginx:myblog_stable
@@ -233,17 +227,15 @@ nginx        myblog_stable   e445ab08b2be   2 weeks ago     126MB
 - No extra space used — Docker reuses the existing image
 - Deleting the original tag does not remove the image
 
-
 ## Finding Dockerfiles and Tags
 
 - Use hub.docker.com to find:
     - Image tags
     - Dockerfiles
 
-
 ## Understanding a Dockerfile
 
-Sample `Dockerfile`:
+#### Sample `Dockerfile`:
 
 ```dockerfile
 FROM debian:buster-slim
@@ -254,11 +246,11 @@ ENV NJS_VERSION 0.3.3
 ENV PKG_RELEASE 1~buster
 
 RUN apt-get update \
- && apt-get install -y nginx \
- && apt-get clean
+    && apt-get install -y nginx \
+    && apt-get clean
 
 RUN ln -sf /dev/stdout /var/log/nginx/access.log \
- && ln -sf /dev/stderr /var/log/nginx/error.log
+    && ln -sf /dev/stderr /var/log/nginx/error.log
 
 COPY index.html /var/www/html/
 
@@ -267,7 +259,7 @@ EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
 ```
 
-### Key Dockerfile Instructions
+#### Key Dockerfile Instructions
 
 - `FROM`: Base image
 - `LABEL`: Metadata (author/contact)
@@ -277,16 +269,15 @@ CMD ["nginx", "-g", "daemon off;"]
 - `EXPOSE`: Declare container listening port
 - `CMD`: Container startup command
 
-### Best Practices
+#### Best Practices
 
 - Combine commands using `&&` to reduce layers
 - Use `apt-get clean` to remove cached packages
 - Avoid unnecessary packages to reduce image size
 
-
 ## Building a Custom Image
 
-Prepare files:
+#### Prepare files:
 
 ```bash
 ls
@@ -295,7 +286,7 @@ ls
 Dockerfile  index.html
 ```
 
-Build the image:
+#### Build the image:
 
 ```bash
 docker build -t mynginx .
@@ -304,7 +295,7 @@ docker build -t mynginx .
 - `-t` = tag
 - `.` = current directory
 
-Run the container:
+#### Run the container:
 
 ```bash
 docker run -dit mynginx
@@ -315,16 +306,15 @@ CONTAINER ID   IMAGE     COMMAND                   ...   PORTS     NAMES
 9eb953fd171d   mynginx   "nginx -g 'daemon of..."  ...   80/tcp    zealous_jennings
 ```
 
-
 ## Checking Layers and Image Versions
 
-### View Image History
+#### View Image History
 
 ```bash
 docker history mynginx
 ```
 
-### List Images Again
+#### List Images Again
 
 ```bash
 docker images
@@ -341,21 +331,16 @@ debian            buster-slim     83ed3c583403   4 weeks ago          69.2MB
 
 # Running Containers
 
-
 ## Why Containers Stop Immediately
 
-Docker treats the software inside a container like a system process.
+- Docker treats the software inside a container like a system process.
+  - If the main process exits, the container stops.
+  - To keep it running, use the `-d` flag to detach.
 
-- If the main process exits, the container stops.
-- To keep it running, use the `-d` flag to detach.
-
-Foreground execution is fine for single tasks, like:
-
-- Downloading a file
-- Processing and saving data
-
-Most containers run background services. Use `-d` to "daemonize" the container.
-
+- Foreground execution is fine for single tasks, like:
+  - Downloading a file
+  - Processing and saving data
+- Most containers run background services. Use `-d` to "daemonize" the container.
 
 ## Running a Detached Debian Container
 
@@ -371,7 +356,6 @@ aefe0007dff8e0f0caaa2f04bde774cfebef7a37112ba9dc24fec29d23326f92
 - `-t`: allocate a TTY
 - `-dit`: allows an interactive shell in the background
 
-
 ## Naming Containers
 
 Hashes aren't human-friendly. Use `--name` to assign a readable name.
@@ -381,7 +365,6 @@ docker run -dit --name=web debian
 ```
 
 Now you can refer to it as `web`.
-
 
 ## Listing Containers
 
@@ -399,7 +382,6 @@ To see all containers, including stopped ones:
 ```bash
 docker ps -a
 ```
-
 
 ## Latest Container
 
@@ -419,18 +401,13 @@ Ob91465e53e5   debian   "bash"    13 seconds ago  Up 12 seconds         third_co
 
 `-l`: shows the most recently created container (running or not)
 
-
 ## Debugging `docker run`
 
-Work backwards if you're stuck:
-
-- Start from the image name.
-- Missing images will cause failure no matter the options.
-
-Common mistake: forgetting `-d`. This causes immediate stop.
-
-If a container with the same name exists, you must remove it before reusing the name.
-
+- Work backwards if you're stuck:
+  - Start from the image name.
+  - Missing images will cause failure no matter the options.
+- Common mistake: forgetting `-d`. This causes immediate stop.
+- If a container with the same name exists, you must remove it before reusing the name.
 
 ## Stopping and Removing Containers
 
@@ -439,7 +416,6 @@ docker stop web
 docker rm web
 ```
 
-
 ## Restarting Containers
 
 Start a stopped container:
@@ -447,7 +423,6 @@ Start a stopped container:
 ```bash
 docker start <CONTAINER>
 ```
-
 
 ## Auto-Restart on Failure or Reboot
 
@@ -467,13 +442,11 @@ Common restart policies:
 - `on-failure`
 - `unless-stopped`
 
-
 ## Getting Help
 
 ```bash
 docker run --help
 ```
-
 
 ## Forcing Container Shutdown
 
@@ -485,7 +458,6 @@ docker kill <CONTAINER>
 
 Warning: `kill` skips graceful shutdown.
 
-
 ## Clean Up Stopped Containers
 
 ```bash
@@ -494,7 +466,6 @@ docker system prune
 
 You’ll be prompted to confirm.
 
-
 ## Auto-Clean with `--rm`
 
 Run a one-off container that deletes itself after stopping:
@@ -502,7 +473,6 @@ Run a one-off container that deletes itself after stopping:
 ```bash
 docker run --rm hello-world
 ```
-
 
 ## Viewing Logs from Background Containers
 
@@ -563,13 +533,13 @@ Status: Downloaded newer image for nginx:latest
 <container_id>
 ```
 
-### What This Does:
+#### What This Does:
 
 - `-d`: Runs container in detached mode (in the background)
 - `-p 8080:80`: Maps port 8080 on the host to port 80 in the container
 - `nginx`: Pulls the nginx:latest image if it's not already present
 
-### Port Mapping:
+#### Port Mapping:
 
 ```bash
 docker ps
@@ -585,23 +555,21 @@ Explanation:
 - `80` = container's internal web server port
 - `0.0.0.0:8080->80/tcp` = all interfaces on the host are listening on port 8080 and forwarding to port 80 inside the container
 
-
 ## Accesss the Web Server
 
-### From local machine:
+#### From local machine:
 
 ```bash
 curl http://localhost:8080
 ```
 
-### Access the Web Server from another device on the network:
+#### Access the Web Server from another device on the network:
 
 Use the Docker host's IP:
 
 ```bash
 http://192.168.1.83:8080
 ```
-
 
 ## View Web Access Logs
 
@@ -619,10 +587,9 @@ docker logs our_nginx
 docker stop our_nginx
 ```
 
-
 ## Serve Your Own Web Content
 
-Create a directory and an index.html file:
+Create a directory and an `index.html` file:
 
 ```bash
 mkdir webpages
@@ -636,7 +603,7 @@ mkdir webpages
 docker run -p 8080:80 --name another_nginx -v ${PWD}/webpages:/usr/share/nginx/html:ro -d nginx
 ```
 
-### Explanation:
+#### Explanation:
 
 - `${PWD}`: Current directory (bash variable)
 - `-v`: Volume mount
@@ -645,10 +612,9 @@ docker run -p 8080:80 --name another_nginx -v ${PWD}/webpages:/usr/share/nginx/h
 
 The container now serves your custom HTML file.
 
-
 ## Test It
 
-### With `curl`:
+#### With `curl`:
 
 ```bash
 curl http://localhost:8080
@@ -659,19 +625,14 @@ Hi from inside the container!
 
 ---
 
-
 # Connecting to Running Containers and Managing Container Output
 
-It's uncommon to SSH into a container.
-
-Instead, you usually:
-
-- Adjust the Dockerfile
-- Rebuild the image
-- Redeploy the container
-
-Still, there are times when you want to interactively inspect a running container.
-
+- It's uncommon to SSH into a container.
+- Instead, you usually:
+  - Adjust the Dockerfile
+  - Rebuild the image
+  - Redeploy the container
+- Still, there are times when you want to interactively inspect a running container.
 
 ## Run a Container with Shell Access
 
@@ -683,7 +644,6 @@ root@60457c088849:/usr/local/apache2#
 ```
 
 This command:
-
 - Uses `-it` for interactive shell
 - Skips `-d` to keep the container in the foreground
 - Starts with `/bin/bash` as the default command
@@ -699,7 +659,6 @@ bin  build  cgi-bin  conf  error  htdocs  icons  include  logs  modules
 
 Exit the container using `exit` or `Ctrl+D`.
 
-
 ## Check Container Status
 
 ```bash
@@ -707,10 +666,8 @@ docker ps
 ```
 
 No container appears because:
-
 - The container exited when `/bin/bash` ended
 - It was not detached (`-d` not used)
-
 
 ## Run Container in Detached Mode
 
@@ -718,16 +675,13 @@ No container appears because:
 docker run -dit --name second_apache httpd /bin/bash
 ```
 
-Container is running in the background. 
-
-Note: Running `/bin/bash` in detached mode isn't useful for interaction
-
+- Container is running in the background. 
+- Note: Running `/bin/bash` in detached mode isn't useful for interaction
 
 ## Bash vs. Sh in Containers
 
-Some images (like Alpine Linux) don’t use bash
-
-Use `/bin/sh` instead:
+- Some images (like Alpine Linux) don’t use bash
+- Use `/bin/sh` instead:
 
 ```bash
 docker exec -it container_name /bin/sh
@@ -739,7 +693,6 @@ Or you can also use `sh`, as long as `sh` is in the container's `$PATH`.
 docker exec -it container_name sh
 ```
 
-
 ## Use `docker exec` to Enter Running Containers
 
 ```bash
@@ -748,7 +701,6 @@ docker exec -it <container_id_or_name> /bin/bash
 ```
 
 Without `-it`, the shell will run and immediately exit.
-
 
 ## Use `docker exec` to Run Commands Inside
 
@@ -785,28 +737,23 @@ docker exec -it execution ls /root
 hello
 ```
 
-
 ## Installing Tools Inside Containers
 
-Many images are minimal and lack common tools.
-
-You can install packages temporarily in a running container:
+- Many images are minimal and lack common tools.
+- You can install packages temporarily in a running container:
 
 ```bash
 apt update && apt install -y <package>
 ```
 
 But
-
 - This only affects the current container
 - You must build a new image to persist changes
 
-
 ## Viewing Processes Inside a Container
 
-You might find `ps` missing inside the container.
-
-Use `docker top` from outside the  container instead:
+- You might find `ps` missing inside the container.
+- Use `docker top` from host instead:
 
 ```bash
 docker top <container name or id>
@@ -824,7 +771,6 @@ This avoids needing to install `procps` inside the container.
 # Docker Registries
 
 Docker registries store and distribute Docker images.
-
 
 ## Key Concepts
 
@@ -859,7 +805,6 @@ You can also use other DNS formats:
 docker pull registry.hub.docker.com/library/ubuntu:bionic
 ```
 
-
 ## Viewing Pulled Images
 
 ```bash
@@ -873,7 +818,6 @@ registry.hub.docker.com/library/ubuntu     bionic   a2a15febcdf3   11 days ago  
 
 - Same `IMAGE ID` means same image.
 - Different repository names affect how you reference them.
-
 
 ## Running Images by Repository
 
@@ -893,7 +837,6 @@ For official images, library/ is implied and usually hidden:
 docker run ubuntu:bionic
 ```
 
-
 ## Removing Images
 
 Delete a specific image:
@@ -909,7 +852,6 @@ docker run ubuntu:bionic
 ```
 
 Docker will pull it again if not found locally.
-
 
 ## Example: Non-Official Images
 
@@ -944,12 +886,11 @@ docker.io/madang804/flask-app:v1
 - Repository: `flask-app`
 - Tag: `v1`
 
-### Naming Format
+#### Naming Format
 
 ```bash
 docker_username/repository:tag
 ```
-
 
 ## Security Risks
 
@@ -970,7 +911,6 @@ docker_username/repository:tag
 - Businesses often use private registries for better control.
 - Docker Hub supports private repositories.
 - Set up with authentication and access control.
-
 
 ## Logging Into Docker Hub
 
@@ -1000,7 +940,6 @@ If no registry is provided, Docker Hub is used by default.
 
 Each instruction in a Dockerfile creates a separate layer in the final image.
 
-
 ## Key Dockerfile Instructions
 
 - **FROM**: Defines the base image.
@@ -1013,7 +952,6 @@ Each instruction in a Dockerfile creates a separate layer in the final image.
 - **ENV**: Defines environment variables.
 - **ENTRYPOINT**: Sets the main executable to run when the container starts.
 
-
 ## Simple Dockerfile
 
 ```dockerfile
@@ -1023,21 +961,14 @@ ENTRYPOINT ["/bin/ping"]
 CMD ["www.docker.com"]
 ```
 
-### Breakdown:
+#### Breakdown:
 
-- `FROM debian:latest`
-Uses the latest Debian image.
-- `LABEL`
-Adds metadata about the author/maintainer.
-- `ENTRYPOINT`
-Runs /bin/ping when the container starts.
-- `CMD`
-Supplies the default argument (www.docker.com) to ping.
+- `FROM debian:latest` Uses the latest Debian image.
+- `LABEL` Adds metadata about the author/maintainer.
+- `ENTRYPOINT` Runs /bin/ping when the container starts.
+- `CMD` Supplies the default argument (www.docker.com) to ping.
 
-Resulting execution:
-
-`/bin/ping www.docker.com`
-
+Resulting execution: `/bin/ping www.docker.com`
 
 ## Build the Image
 
@@ -1061,7 +992,6 @@ madang804/dockerping  latest    bc80449d4a5b   19 seconds ago   114MB
 debian                latest    85c4fd36a543   2 weeks ago      114MB
 ```
 
-
 ## Push to Docker Hub
 
 ```bash
@@ -1071,7 +1001,6 @@ docker images
 docker login
 docker push madang804/dockerping:latest
 ```
-
 
 ## Override CMD
 
@@ -1083,7 +1012,7 @@ docker run madang804/dockerping:latest
 64 bytes from server-13-33-231-30.lax3.r.cloudfront.net (13.33.231.30): icmp_seq=2 ttl=61 time=76.1 ms
 
 # override CMD
-docker run madang/dockerping google.com
+docker run madang804/dockerping google.com
 
 # output:
 64 bytes from lax17s34-in-f14.1e100.net (172.217.11.78): icmpt_seq=1 ttl=61 time=119 ms
@@ -1093,18 +1022,16 @@ docker run madang/dockerping google.com
 - First attempt, ping `docker.com`
 - Second attempt, ping `google.com`
 
-
 ## Override ENTRYPOINT
 
 ```bash
 docker run --entrypoint /bin/ls -it madang804/dockerping:latest $PWD
 ```
 
-- This is one way to work with image that has an ENTRYPOINT.
-- The better alternative is to build image with `CMD` instruction and without the `ENTRYPOINT`.
+- This is one way to work with image with an ENTRYPOINT.
+- The better alternative is to build image with `CMD` instruction and avoid the `ENTRYPOINT`.
 
-
-### Dockerfile: `Dockerfile-allow-override`
+#### Dockerfile: `Dockerfile-allow-override`
 
 ```dockerfile
 FROM debian:latest
@@ -1115,7 +1042,7 @@ RUN apt update && \
 CMD ["/bin/bash"]
 ```
 
-### Build the Image
+#### Build the Image
 
 ```bash
 docker build -t madang804/nettools:allow-override -f Dockerfile-allow-override
@@ -1123,7 +1050,7 @@ docker build -t madang804/nettools:allow-override -f Dockerfile-allow-override
 
 `-f <Dockerfile>` identifies dockerfile that doesn't conform to standard naming convention `Dockerfile`.
 
-### Run the Image Overriding Default CMD
+#### Run the Image Overriding Default CMD
 
 ```bash
 docker run -it madang804/nettools:allow-override curl google.com
@@ -1133,59 +1060,53 @@ docker run -it madang804/nettools:allow-override curl google.com
 
 # Managing Docker Volumes
 
-Docker containers are designed to be:
+- Docker containers are designed to be:
+  - Small
+  - Portable
+  - Disposable
+- Images usually include only what's necessary to run a service.
 
-- Small
-- Portable
-- Disposable
-
-Images usually include only what's necessary to run a service.
-
-> **Avoid storing important data inside containers.**
+> Avoid storing important data inside containers.
 
 Use volumes to:
-
 - Persist data across container restarts
 - Share data between multiple containers
 
-
 ## Volume Types and Mounting Methods
 
-### Legacy Syntax
+#### Legacy Syntax
 
 ```bash
 docker run -v /dbdir:/var/lib/mysql -d mariadb
 docker run --volume /dbdir:/var/lib/mysql -d mariadb
 ```
 
-### Preferred Syntax (`--mount`)
+#### Preferred Syntax (`--mount`)
 
 ```bash
 docker run -d --name container-name \
   --mount source=volume-name,destination=/container/path image-name
 ```
 
-
 ## Docker Volume Commands
 
-### Create a Volume
+#### Create a Volume
 
 ```bash
 docker volume create <volume>
 ```
 
-### List Volumes
+#### List Volumes
 
 ```bash
 docker volume ls
 ```
 
-### Delete a Volume
+#### Delete a Volume
 
 ```bash
 docker volume rm <volume>
 ```
-
 
 ## Inspecting a Volume
 
@@ -1203,7 +1124,6 @@ docker volume inspect <volume>
 ]
 ```
 
-
 ## Mounting a Volume in a Container
 
 ```bash
@@ -1212,7 +1132,6 @@ docker run -d --name withvolume \
 ```
 
 Avoid spaces in `--mount`. You can also use:
-
 - `src` instead of `source`
 - `dst` or target instead of `destination`
 
@@ -1232,7 +1151,6 @@ docker inspect withvolume | grep Mounts -A 10
   }
 ```
 
-
 ## Add Data to Volume from Host
 
 ```bash
@@ -1250,7 +1168,6 @@ cat index.html
 Hello from the mydata1 volume!
 ```
 
-
 ## Mount a Read-Only Volume
 
 ```bash
@@ -1260,7 +1177,7 @@ docker run -d --name readcontainer \
 
 You can also use shorthand `ro` for `readonly`.
 
-### Check read-only status:
+### Check `read-only` status:
 
 ```bash
 docker inspect readcontainer | grep Mounts -A 10
@@ -1287,8 +1204,7 @@ touch /usr/share/nginx/html/test
 # touch: cannot touch '/usr/share/nginx/html/test': Read-only file system
 ```
 
-You can grant read-write to one container and read-only to another using the same volume.
-
+You can grant `read-write` to one container and `read-only` to another using the same volume.
 
 ## Ephemeral (tmpfs) Volumes
 
@@ -1300,7 +1216,7 @@ docker run -dit --name ephemeral \
   --mount type=tmpfs,destination=/root/volume nginx
 ```
 
-### Inspect:
+#### Inspect:
 
 ```bash
 docker inspect ephemeral | grep Mounts -A 10
@@ -1315,14 +1231,14 @@ docker inspect ephemeral | grep Mounts -A 10
   }
 ```
 
-### Add size limit (e.g. 256MB):
+#### Add size limit (e.g. 256MB):
 
 ```bash
 docker run -dit --name ephemeral2 \
   --mount type=tmpfs,tmpfs-size=256M,dst=/root/volume nginx
 ```
 
-### Check tmpfs volume size:
+#### Check tmpfs volume size:
 
 ```bash
 docker exec -it ephemeral2 df -h
@@ -1332,7 +1248,6 @@ Filesystem Size  Used  Avail Use% Mounted on
 tmpfs      256M  0     256M  0%   /root/volume
 ...
 ```
-
 
 ## Remove Docker Volume
 
@@ -1354,7 +1269,6 @@ docker volume prune
 
 Docker leverages the Linux kernel's `netfilter` system via `iptables`. In newer systems, `nftables` may eventually replace this. Docker adapts to whatever networking mechanism the Linux kernel provides.
 
-
 ## Launching a Basic Web Server with Port Mapping
 
 ```bash
@@ -1372,7 +1286,6 @@ docker ps
 CONTAINER ID   IMAGE        COMMAND                PORTS                NAMES
 90c1116fcdcf   php:apache   "docker-php-entrypoi"  0.0.0.0:8080->80/tcp pensive_gould
 ```
-
 
 ## Inspect Docker's iptables Configuration
 
@@ -1401,7 +1314,6 @@ Stop the container:
 docker stop pensive_gould
 ```
 
-
 ## Host Networking Mode
 
 To run a container using the host's networking stack:
@@ -1428,7 +1340,6 @@ curl http://127.0.0.1
 
 Use `--network hos`t only when absolutely necessary. It removes network isolation.
 
-
 ## List Docker Networks
 
 ```bash
@@ -1443,7 +1354,6 @@ NETWORK ID     NAME     DRIVER    SCOPE
 
 - The default `bridge` network is used unless specified otherwise.
 - Containers on the same bridge can communicate.
-
 
 ## Inspect a Network
 
@@ -1485,7 +1395,6 @@ docker network inspect bridge
 
 Now you'll see both `w1` and `w2` with separate IPs (e.g. `.2` and `.3`).
 
-
 ## Container-to-Container Communication
 
 ```bash
@@ -1505,7 +1414,6 @@ docker logs w2
 ```
 
 This confirms communication between `w1` and `w2` via the default bridge network.
-
 
 ## Isolated Networks for Application Groups
 
