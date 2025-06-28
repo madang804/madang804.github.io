@@ -25,7 +25,6 @@
 
 # Shell Built-ins and Variables
 
-
 ## What Are Shell Built-ins?
 
 - Shell built-in commands are part of the shell itself.
@@ -35,18 +34,19 @@ To check if a command is built-in, use:
 
 ```bash
 type -a echo
-# echo is a shell builtin
-# echo is /usr/bin/echo
+
+# output:
+echo is a shell builtin
+echo is /usr/bin/echo
 ```
 
-### Why Use Built-ins?
+#### Why Use Built-ins?
 
 - Faster: No external program invocation
 - More portable: Avoids path issues (`/bin/echo` vs `/usr/bin/echo`)
 - Simplifies scripting across systems
 
 Prefer shell built-ins when available.
-
 
 ## Getting Help on Built-ins
 
@@ -58,43 +58,44 @@ help echo
 
 This shows help only for built-ins.
 
-
 ## Example: External Command
 
 ```bash
 type -a uptime
-# uptime is /usr/bin/uptime
+
+# output:
+uptime is /usr/bin/uptime
 
 help uptime
-# -bash: help: no help topics match 'uptime'
+
+# output:
+-bash: help: no help topics match 'uptime'
 ```
 
-This shows help only for built-ins.
+This shows `help` only works for built-ins.
 
 ```bash
 man uptime
 ```
 
-
 ## Shell Variables
 
 Variables store data as name-value pairs.
 
-### Basics
+#### Basics
 
 ```bash
 WORD='script'   # No space around the equal sign
 ```
 
 Rules:
-
 - Variable names can contain letters, digits, and underscores
 - Must start with a letter or underscore
 - Cannot start with a digit
 
 By convention, variable names are written in uppercase.
 
-### Referencing Variables
+#### Referencing Variables
 
 Use `$` prefix to access the value:
 
@@ -103,7 +104,7 @@ echo "${WORD}"   # script
 echo '${WORD}'   # ${WORD}
 ```
 
-### Quoting and Expansion
+#### Quoting and Expansion
 
 - Double quotes allow variable expansion
 - Single quotes print the literal text
@@ -114,17 +115,14 @@ This applies to all commands, not just `echo`.
 
 # Pseudocode, Special Variables, Command Substitution, if Statement, Conditionals Expressions
 
-
 ## Pseudocode in Shell Scripts
 
 Before writing a shell script:
-
 - Define your goal clearly  
 - Break down steps in plain English as comments  
 - Implement each step with actual shell syntax  
 
 This helps in planning and improves readability.
-
 
 ## Special Variables: `UID` and `EUID`
 
@@ -137,13 +135,14 @@ For most purposes, use `UID`.
 
 ```bash
 UID='1001'
-# -bash: UID: readonly variable
-```
 
+# output: 
+-bash: UID: readonly variable
+```
 
 ## Displaying User Information
 
-### Using `id` (external command)
+#### Using `id` (external command)
 
 ```bash
 id                   # Full UID, GID, and groups  
@@ -151,7 +150,6 @@ id -u                # Only UID
 id -un               # Username (same as whoami)
 ```
 Options:
-
 - `-u`: Show UID
 - `-n`: Show name instead of numeric ID
 
@@ -159,12 +157,11 @@ Options:
 uid=1000(madan) gid=1000(madan) groups=1000(madan)
 ```
 
-### Using `whoami` (external command)
+#### Using `whoami` (external command)
 
 ```bash
 whoami               # Same as `id -un`
 ```
-
 
 ## Command Substitution
 
@@ -180,7 +177,6 @@ Legacy syntax (less preferred):
 ```bash
 USER_NAME=`id -un`
 ```
-
 
 ## `if` Statement Basics
 
@@ -200,10 +196,9 @@ fi
 - Alternatively, use a newline for better readability
 - An exit status of 0 means "true"
 
-
 ## Conditional Expressions
 
-### `[[` - Advanced Conditional
+#### `[[` - Advanced Conditional
 
 - Bash-specific keyword
 - Not portable to all shells
@@ -213,10 +208,12 @@ fi
 ```
 ```bash
 type -a [[
-# [[ is a shell keyword and built-in
+
+# output: 
+[[ is a shell keyword and built-in
 ```
 
-### `test` - POSIX Compatible
+#### `test` - POSIX Compatible
 
 - Built-in and also available at `/usr/bin/test`
 - Returns `0` (true) or `1`(false)
@@ -226,10 +223,12 @@ test "$USER" = "madan"
 ```
 ```bash
 type -a test
-# test is a shell builtin and also available at /usr/bin/test
+
+# output: 
+test is a shell builtin and also available at /usr/bin/test
 ```
 
-### `[` - Legacy Syntax
+#### `[` - Legacy Syntax
 
 - Built-in and also available at `/usr/bin/[`
 - Equivalent to `test`
@@ -239,13 +238,14 @@ type -a test
 ```
 ```bash
 type -a [
-# [ is a shell builtin and also available at /usr/bin/[
+
+# output:
+[ is a shell builtin and also available at /usr/bin/[
 ```
 
 ---
 
 # Exit Statuses, Return Codes, Special Variables and String Test Conditionals 
-
 
 ## exit Built-in
 
@@ -258,7 +258,6 @@ exit [N]
 - If `N` is not specified, the exit status of the last command is used.
 - It's best to be explicit with exit codes for clarity.
 
-
 ## Special Variable: `$?`
 
 `$?` stores the exit status of the most recently executed command.
@@ -266,22 +265,25 @@ exit [N]
 - `0` = success
 - Any non-zero value (usually `1`) = failure
 
-### Example
+#### Example
 
 ```bash
 id -un
-# madan
+
+# output:
+madan
 
 echo $?
-# 0
-```
 
+# output:
+0
+```
 
 ## Equal Sign: Assignment vs Test
 
 The `=` symbol behaves differently based on context.
 
-### 1. Assignment
+#### 1. Assignment
 
 ```bash
 VARIABLE=value
@@ -289,7 +291,7 @@ VARIABLE=value
 
 - Assigns `value` to `VARIABLE`
 
-### 2. String Test (Inside `[[ ]]`)
+#### 2. String Test (Inside `[[ ]]`)
 
 ```bash
 [[ "$USER" = "madan" ]]
@@ -305,12 +307,11 @@ VARIABLE=value
 
 # Reading Standard Input, Creating Accounts, Username Conventions, and More Quoting
 
-
 ## Reading Standard Input with `read`
 
 `read` is a shell built-in used to accept input from the user.
 
-### Syntax:
+#### Syntax:
 
 ```bash
 read [options] VARIABLE
@@ -320,16 +321,17 @@ read [options] VARIABLE
 - First word goes to the first variable, second word to second variable, etc.
 - Any remaining words go to the last variable listed.
 
-### Read a Full Line Into One Variable:
+#### Read a Full Line Into One Variable:
 
 ```bash
 read -p 'Type something: ' THING
-# type something: something
+type something: something
 
 echo $THING
-# something
-```
 
+# output:
+something
+```
 
 ## Creating User Accounts and Username Conventions
 
@@ -337,7 +339,7 @@ echo $THING
 - This practice comes from legacy UNIX systems.
 - Linux followed similar conventions.
 
-### Why It Matters:
+#### Why It Matters:
 
 Commands like `ps` may display only the first 8 characters of the username.
 
@@ -345,7 +347,7 @@ Commands like `ps` may display only the first 8 characters of the username.
 ps -ef
 ```
 
-### Example Output:
+#### Example Output:
 
 ```bash
 madankum+  3312 3311  0 12:27 pts/0 00:00:00 -bash
@@ -357,11 +359,9 @@ madankum+  3335 3312  0 12:29 pts/0 00:00:00 ps -ef
 
 > This won’t break anything, but it's something to keep in mind when parsing or viewing command output.
 
-
 ## Quoting Reminder
 
 Quoting behavior affects input and variable expansion:
-
 - Single quotes (`'`) preserve literal characters.
 - Double quotes (`"`) allow variable and command substitution.
 - Use quotes appropriately when working with `read`, `echo`, and other commands.
@@ -370,7 +370,6 @@ Quoting behavior affects input and variable expansion:
 
 # Random Data, Cryptographic Hash Functions, Text and String Manipulation
 
-
 ## RANDOM Built-in Variable
 
 - `RANDOM` is a shell built-in variable available in Bash.
@@ -378,51 +377,54 @@ Quoting behavior affects input and variable expansion:
 
 ```bash
 echo ${RANDOM}
-# Example output:
+
+# output:
 28096
 ```
 
-### Using `date` for Randomness
+#### Using `date` for Randomness
 
 - Time constantly changes and can be used to generate passwords.
 - `date +%s` gives the current Unix timestamp (seconds since Jan 1, 1970).
 
 ```bash
 date +%s
-# Example output:
+
+# output:
 1501863308
 ```
 
-### Adding Nanoseconds
+#### Adding Nanoseconds
 
 - `date +%N` gives nanoseconds.
 - Combine `%s` and `%N` for higher entropy:
 
 ```bash
 date +%s%N
-# Example output:
+
+# output:
 1501863591950214399
 ```
-
 
 ## Checksums and Hashing
 
 - A checksum is a numeric value that verifies file integrity.
 - Common use: validating downloaded files using published hash values.
 
-### Example: Validating CentOS ISO
+#### Example: Validating CentOS ISO
 
 ```bash
 cat sha1sum.txt
-# Example output:
+
+# output:
 71a7aa147877b413497cdff5b1e0aa5bc0c9484f CentOS-7-x86_64-Minimal-1611.iso
 
 sha1sum CentOS-7-x86_64-Minimal-1611.iso
-# Should match published value
+
+# output: should match published value
 ```
 
 - If hashes match, the file is intact and uncorrupted.
-
 
 ## Hash Functions Available
 
@@ -440,17 +442,17 @@ Common hash tools
 
 These convert large data blocks into a fixed-size hash.
 
-
 ## Hash Output as Passwords
 
 - Hashes are hexadecimal (0-9, A-F).
 - A `sha256sum` hash is 64 characters long.
 
-### Example: Generate a Password with `sha256sum`
+#### Example: Generate a Password with `sha256sum`
 
 ```bash
 date +%s | sha256sum
-# Example output:
+
+# output:
 1c18053ee5b5195fe3484221f5c204db4b4b249038ceb37ead49cfd337b8ace7
 ```
 
@@ -458,7 +460,8 @@ date +%s | sha256sum
 
 ```bash
 date +%s%N | sha256sum | head -c32
-# Example output:
+
+# output:
 d684b33d772f75dcc958963d7dbd61d2
 ```
 
@@ -466,10 +469,10 @@ d684b33d772f75dcc958963d7dbd61d2
 
 ```bash
 date +%s%N${RANDOM}${RANDOM} | sha256sum | head -c48
-# Example output:
+
+# output:
 89725e0ce5172c6a93bfe8b1849cb292642a2e5cc2643698
 ```
-
 
 ## Add a Special Character
 
@@ -479,11 +482,12 @@ PASSWORD=$(date +%s%N${RANDOM}${RANDOM} | sha256sum | head -c48)
 SPECIAL_CHARACTER=$(echo '!@#$%^&*()_-+=' | fold -w1 | shuf | head -c1)
 
 echo "${PASSWORD}${SPECIAL_CHARACTER}"
-# Example output:
+
+# output:
 89725e0ce5172c6a93bfe8b1849cb292642a2e5cc2643698&
 ```
 
-### Explanation
+#### Explanation
 
 - `fold -w1`: Splits string into one character per line, i.e., align all characters in a single vertical width.
 - `shuf`: Randomly shuffles input lines.
@@ -492,7 +496,6 @@ echo "${PASSWORD}${SPECIAL_CHARACTER}"
 ---
 
 # Positional Parameters, Arguments, For Loop, Special Parameters
-
 
 ## Parameters vs Arguments
 
@@ -519,14 +522,17 @@ echo "${PASSWORD}${SPECIAL_CHARACTER}"
 
 ```bash
 echo ${PATH}
+
+# output:
 /usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin:/home/vagrant/bin
 ```
 
 ```bash
 which head
+
+# output:
 /usr/bin/head
 ```
-
 
 ## Override a Built-in Command
 
@@ -541,9 +547,13 @@ Check the command resolution:
 
 ```bash
 which head
+
+# output:
 /usr/local/bin/head
 
 which -a head
+
+# output:
 /usr/local/bin/head
 /usr/bin/head
 ```
@@ -552,24 +562,25 @@ Test it:
 
 ```bash
 head
+
+# output:
 Hello from my head.
 ```
 
 Use the original `head`:
 
 ```bash
-head
 /usr/bin/head -n1 /etc/passwd
+
+# output:
 root:x:0:0:root:/root:/bin/bash
 ```
 
 Remove the custom version of `head`:
 
 ```bash
-head
 sudo rm /usr/local/bin/head
 ```
-
 
 ## Bash Hash Table
 
@@ -577,6 +588,8 @@ Bash caches executable paths:
 
 ```bash
 type head
+
+# output:
 head is hashed (/usr/local/bin/head)
 ```
 
@@ -584,6 +597,8 @@ head is hashed (/usr/local/bin/head)
 
 ```bash
 head
+
+# output:
 -bash: /usr/local/bin/head: No such file or directory
 ```
 
@@ -592,11 +607,12 @@ Clear cache:
 ```bash
 hash -r
 type head
+
+# output:
 head is /usr/bin/head
 ```
 
 > Typically hashing is not a problem because commands don’t usually just randomly appear and disappear during the same shell session and probably not during the execution of a shell script. In any case, it’s just something to be aware of.
-
 
 ## `${0}` and How It's Stored
 
@@ -610,24 +626,27 @@ echo "You executed this command: ${0}"
 Copy to PATH:
 
 ```bash
-#!/bin/bash
 sudo cp script.sh /usr/local/bin
 ```
 
 Test different executions:
 
 ```bash
-#!/bin/bash
 ./script.sh
+
+# output:
 You executed this command: ./script.sh
 
 /home/madan/script.sh
+
+# output:
 You executed this command: /home/madan/script.sh
 
 script.sh
+
+# output:
 You executed this command: /usr/local/bin/script.sh
 ```
-
 
 ## `basename` and `dirname`
 
@@ -635,17 +654,22 @@ Strip file path components:
 
 ```bash
 basename /dir/script.sh
+
+# output:
 script.sh
 
 basename /not/here
+
+# output:
 here
 
 dirname /dir/script.sh
+
+# output:
 /dir
 ```
 
 These commands do not check if the file exists.
-
 
 ## Special Parameters
 
@@ -654,7 +678,6 @@ These commands do not check if the file exists.
 | `$#`               | Number of positional parameters                           |
 | `$@`               | All arguments as separate words (quoted: "$1" "$2" ...)   |
 | `$*`               | All arguments as a single word (quoted: "$1 $2 ...")      |
-
 
 ## `for` Loop Syntax
 
@@ -671,7 +694,7 @@ If `in WORDS...` is omitted, `in $@` is assumed.
 
 ## Example: Password Generator Script
 
-### Using `$@`
+#### Using `$@`
 
 Create script.sh:
 
@@ -687,11 +710,13 @@ Run ./script.sh
 
 ```bash
 ./script.sh madan kumar
+
+# output:
 madan: 89725e0ce5172c6a93bfe8b1849cb292642a2e5cc2643698
 kumar: c9bf1a3bf09e3bb42abab0c6a8ea286767ae9b1d988e8293
 ```
 
-### Using `$*`
+#### Using `$*`
 
 Create script.sh:
 
@@ -707,18 +732,18 @@ Run ./script.sh
 
 ```bash
 ./script.sh madan kumar
+
+# output:
 madan kumar: 89725e0ce5172c6a93bfe8b1849cb292642a2e5cc2643698
 ```
 
 **Key difference:**
-
 - `"$@"`: Treats each argument separately.
 - `"$*"`: Treats all arguments as one string.
 
 ---
 
 # The While Loop, Shifting, Sleeping
-
 
 ## `while` Loop
 
@@ -734,7 +759,6 @@ while COMMANDS; do COMMANDS; done
 
 If the condition is never true, the commands inside `while` will never run.
 
-
 ## `true` Command
 
 `true` is a shell built-in that always returns an exit status of 0.
@@ -742,15 +766,18 @@ If the condition is never true, the commands inside `while` will never run.
 ```bash
 true
 echo $?
-# Output: 0
+
+# Output:
+0
 
 true blah blah
 echo $?
-# Output: 0
+
+# Output:
+0
 ```
 
 Even with arguments, `true` always returns 0.
-
 
 ## `sleep` Command
 
@@ -774,7 +801,6 @@ sleep 5s
 sleep 1m
 ```
 
-
 ## `shift` Command
 
 `shift` is a shell built-in that moves positional parameters to the left.
@@ -788,7 +814,7 @@ shift      # same as shift 1
 shift 2    # shifts by two positions
 ```
 
-### Example Script
+#### Example Script
 
 ```bash
 #!/bin/bash
@@ -808,11 +834,8 @@ Run the script:
 
 ```bash
 ./script.sh madan kumar gurung
-```
 
-Output:
-
-```bash
+# output:
 Number of parameters: 3
 Parameter 1: madan
 Parameter 2: kumar
@@ -828,7 +851,6 @@ Parameter 1: gurung
 Parameter 2:
 Parameter 3:
 ```
-
 
 ## Use Case for `shift`
 
@@ -852,7 +874,6 @@ This allows you to capture multiple words in one variable (`COMMENT`) without kn
 # Advanced Standard Input, Standard Output, and Standard Error
 
 Linux supports three types of I/O streams:
-
 - **stdin** (standard input)
 - **stdout** (standard output)
 - **stderr** (standard error)
@@ -860,7 +881,6 @@ Linux supports three types of I/O streams:
 By default:
 - `stdin` comes from the keyboard.
 - `stdout` and `stderr` go to the screen.
-
 
 ## Redirecting `stdout`
 
@@ -870,34 +890,38 @@ Use the `>` symbol:
 FILE="/tmp/data"
 head -n1 /etc/passwd > ${FILE}
 cat /tmp/data
-```
 
-Output:
-
-```bash
+# output:
 root:x:0:0:root:/root:/bin/bash
 ```
 
 ```bash
 id -un > id
 cat id
-# madan
+
+# output:
+madan
 
 echo "${UID}" > uid
 cat uid
-# 1000
+
+# output:
+1000
 ```
 
 If you redirect to a location where you lack permissions:
 
 ```bash
 echo "${UID}" > /uid
-# -bash: /uid: Permission denied
+
+# output:
+-bash: /uid: Permission denied
 
 ls -ld /
-# dr-xr-xr-x 19 root root 4096 Jul 28 11:08 /
-```
 
+# output:
+dr-xr-xr-x 19 root root 4096 Jul 28 11:08 /
+```
 
 ## Redirecting `stdin`
 
@@ -906,7 +930,9 @@ Use the `<` symbol:
 ```bash
 read LINE < ${FILE}
 echo "LINE contains: ${LINE}"
-# LINE contains: root:x:0:0:root:/root:/bin/bash
+
+# outpu:
+LINE contains: root:x:0:0:root:/root:/bin/bash
 ```
 
 You can also redirect input into commands like `passwd`:
@@ -914,17 +940,17 @@ You can also redirect input into commands like `passwd`:
 ```bash
 echo 'secret' > password
 sudo passwd --stdin madan < password
-# passwd: all authentication tokens updated successfully
+
+# output:
+passwd: all authentication tokens updated successfully
 
 su - madan
-# Password: secret
+Password: <password>
 ```
 
 Difference:
-
 - `|`: `stdin` comes from command output
 - `<`: `stdin` comes from a file
-
 
 ## Appending Output
 
@@ -934,17 +960,14 @@ Use `>>` instead of `>` to append:
 echo "append this" >> file.txt
 ```
 
-
 ## File Descriptors
 
 Each process starts with three file descriptor:
-
 - `0` — stdin
 - `1` — stdout
 - `2` — stderr
 
 Everything in Linux is treated as a file. File descriptors are pointers to data sources (like files, screens, or devices).
-
 
 ## Explicit vs Implicit Redirection
 
@@ -962,7 +985,6 @@ No space allowed between file descriptor and operator.
 echo "${UID}" > uid     # stdout (implicit)
 echo "${UID}" 1> uid    # stdout (explicit)
 ```
-
 
 ## Redirecting `stderr`
 
@@ -998,18 +1020,14 @@ Newer syntax:
 head -n1 /etc/passwd /fakefile &> head.both
 ```
 
-
 ## Pipes and Error Output
 
 By default, pipes only pass `stdout`:
 
 ```bash
 head -n1 /etc/passwd /fakefile | cat -n
-```
 
-Output:
-
-```bash
+# output:
 head: cannot open ‘/fakefile’ for reading: No such file or directory
 1  ==> /etc/passwd <==
 2  root:x:0:0:root:/root:/bin/bash
@@ -1019,6 +1037,11 @@ head: cannot open ‘/fakefile’ for reading: No such file or directory
 
 ```bash
 head -n1 /etc/passwd /fakefile 2>&1 | cat -n
+
+# output:
+1  ==> /etc/passwd <==
+2  root:x:0:0:root:/root:/bin/bash
+3  head: cannot open ‘/fakefile’ for reading: No such file or directory
 ```
 
 Or use shorthand:
@@ -1026,15 +1049,6 @@ Or use shorthand:
 ```bash
 head -n1 /etc/passwd /fakefile |& cat -n
 ```
-
-Final output:
-
-```bash
-1  ==> /etc/passwd <==
-2  root:x:0:0:root:/root:/bin/bash
-3  head: cannot open ‘/fakefile’ for reading: No such file or directory 
-```
-
 
 ## Suppressing Output
 
@@ -1052,7 +1066,6 @@ Useful in scripts to hide output from users.
 
 The `case` statement is a clean way to make decisions based on the value of a variable.
 
-
 ## Syntax
 
 ```bash
@@ -1066,7 +1079,6 @@ esac
 - If a match is found, it executes the associated commands.
 - Matching stops after the first match.
 - If no match is found, nothing runs unless a catch-all `*` pattern is used.
-
 
 ## Example
 
@@ -1092,7 +1104,6 @@ esac
 - Patterns like `status|state` allow for multiple matches.
 - `*` is a catch-all fallback placed last.
 
-
 ## Notes
 
 - Scripts run top to bottom.
@@ -1106,7 +1117,6 @@ case "$1" in
     ;;
 esac
 ```
-
 
 ## Compact Style
 
@@ -1127,7 +1137,6 @@ esac
 - Space after parentheses `) ` is optional but improves readability.
 - Use semicolons to separate multiple commands on the same line.
 
-
 ## Use Cases
 
 Case statements are the core of many old-school init scripts.
@@ -1141,7 +1150,6 @@ Example
 ```
 
 These scripts rely on `case` to handle actions like start, stop, restart, and status.
-
 
 ## User Input Example
 
@@ -1164,23 +1172,20 @@ This is useful for creating simple menus or interactive scripts.
 
 # Functions
 
-
 ## What Are Functions?
 
 A function is a group of commands grouped under a single name.
 
 You can:
-
 - Think of a function as a script within your main script.
 - Call a function just like any command.
 
-### Why Use Functions?
+#### Why Use Functions?
 
 - Avoid code duplication - keep your code DRY (Don't Repeat Yourself).
 - Modularise tasks - break large tasks into small, manageable ones.
 
 > If you're repeating code or copying/pasting, it's time to use a function.
-
 
 ## Function Syntax
 
@@ -1188,11 +1193,9 @@ You can:
 function name {
   commands
 }
-```
 
 or
 
-```bash
 name() {
   commands
 }
@@ -1201,7 +1204,6 @@ name() {
 - Scripts are executed top-down.
 - Define a function before you use it.
 - To call a function: just use its name (no parentheses).
-
 
 ## Example: Basic Function
 
@@ -1224,13 +1226,11 @@ log "This is fun!"
 - `$@` expands to all positional arguments.
 - Global variables like `VERBOSE` should be used with care.
 
-
 ## Variable Scope in Functions
 
 - Local variables exist only inside a function.
 - Global variables exist everywhere in the script.
 - Best practice: Use `local` inside functions to avoid variable conflicts.
-
 
 ## Example: Pass VERBOSE as Argument
 
@@ -1251,7 +1251,6 @@ log "true" "This is fun!"
 
 Use `shift` to drop the first argument `$1` and shift the others left.
 
-
 ## Optional: Use a Global Constant
 
 ```bash
@@ -1271,7 +1270,6 @@ log "This is fun!"
 
 - `readonly` marks a variable unchangeable.
 - Acts like a constant in other languages.
-
 
 ## Logging to System Log
 
@@ -1303,12 +1301,10 @@ Jan 12 17:55:28 machinename script.sh: Hello!
 Jan 12 17:55:28 machinename script.sh: This is fun!
 ```
 
-
 ## Best Practice
 
 - Define all functions at the top of the script.
 - Only `readonly` variables or sourced files should come before functions.
-
 
 ## Practical Example: Backup a File
 
@@ -1348,12 +1344,10 @@ else
 fi
 ```
 
-
 ## Why Use `/var/tmp`?
 
 - Files in `/var/tmp` persist across reboots.
 - Safer than `/tmp`, which is regularly cleaned.
-
 
 ## Why Use `basename` and `date`?
 
@@ -1369,7 +1363,6 @@ date +%F-%N
 - `date +%F` gives sortable full date (YYYY-MM-DD).
 - `date +%N` gives nanoseconds for uniqueness.
 
-
 ## Alternatives to %N for Unique Names
 
 You can also use:
@@ -1381,10 +1374,8 @@ You can also use:
 
 # Parsing Command Line Options with `getopts`
 
-`getopts` processes command line options.
-
-If you want your shell scripts to behave like Linux executables, you should let users specify options that change script behavior. This is hard to do with a basic `case` statement, but `getopts` handles it well.
-
+- `getopts` processes command line options.
+- If you want your shell scripts to behave like Linux executables, you should let users specify options that change script behavior. This is hard to do with a basic `case` statement, but `getopts` handles it well.
 
 ## Why `getopts`?
 
@@ -1392,7 +1383,6 @@ If you want your shell scripts to behave like Linux executables, you should let 
 - Shell built-ins are preferred over executables for portability and performance.
 - You may see `getopt` in older scripts. It's an external command with quirks.
 - For more on `getopt`, check its man page.
-
 
 ## Syntax
 
@@ -1404,12 +1394,10 @@ getopts <optstring> <variable name> [arguments]
 - `variable name`: stores each option as it is processed.
 
 Use `getopts` inside a `while` loop. It returns:
-
 - `0` if an option is found
 - `1` when all options are processed
 
 It parses positional parameters `$@`by default.
-
 
 ## Example: Password Generator Script
 
@@ -1487,7 +1475,7 @@ echo "${PASSWORD}"
 exit 0
 ```
 
-### Notes
+#### Notes
 
 - `getopts` uses `OPTARG` for option arguments.
 - Use `OPTIND` to shift and remove parsed options.
@@ -1498,7 +1486,6 @@ exit 0
 # Math Operations
 
 Bash supports basic integer math operations using arithmetic expansion.
-
 
 ## Arithmetic Expansion Syntax
 
@@ -1518,10 +1505,8 @@ NUM=$(( 6 % 4 ))   # 2
 NUM=$(( 6 / 4 ))   # 1
 ```
 
-Bash does integer division only. No rounding. It truncates decimals.
-
-Need floating-point support? Use `bc` or `awk`.
-
+- Bash does integer division only. No rounding. It truncates decimals.
+- Need floating-point support? Use `bc` or `awk`.
 
 ## Using Variables in Arithmetic
 
@@ -1532,7 +1517,6 @@ TOTAL=$(( DICEA + DICEB ))
 ```
 
 Inside `(( ))`, do not prefix variables with `$`.
-
 
 ## Modifying Variables with Arithmetic
 
@@ -1561,10 +1545,9 @@ With substitution:
 NUM=$(( NUM += 5 ))  # Still updates and reassigns NUM
 ```
 
-
 ## Other Math Methods
 
-### 1. Using `let`
+#### 1. Using `let`
 
 ```bash
 let NUM='2 + 3'  # 5
@@ -1574,11 +1557,10 @@ let NUM++        # 6
 - `let` is a shell built-in.
 - Run `help let` for supported operators.
 
-### 2. Using `expr`
+#### 2. Using `expr`
 
 ```bash
-expr 1 + 1
-# Output: 2
+expr 1 + 1  # 2
 ```
 
 Assignment with command substitution:
@@ -1591,24 +1573,25 @@ NUM=$(expr 2 + 3)  # 5
 
 # Finding Files
 
-
 ## Checking if a Command Exists
 
 The `userdel` command deletes a user from the system. If it's not found in your path:
 
 ```bash
 type -a userdel
-# Output: -bash: type: userdel: not found
+
+# output:
+-bash: type: userdel: not found
 
 which userdel
-# Output: /usr/bin/which: no userdel in (your $PATH)
+
+# output:
+/usr/bin/which: no userdel in (your $PATH)
 ```
 
 This means:
-
 - The command might not exist
 - Or it's located outside your current `$PATH`
-
 
 ## Using `locate` to Find Files
 
@@ -1616,7 +1599,9 @@ This means:
 
 ```bash
 locate userdel
-# Output: /usr/sbin/userdel
+
+# output:
+/usr/sbin/userdel
 ```
 
 Create a new `userdel` custom file and locate it:
@@ -1624,7 +1609,9 @@ Create a new `userdel` custom file and locate it:
 ```bash
 touch ~/userdel
 locate userdel
-# File won't show up
+
+# output:
+File won't show up
 ```
 
 Force update the index:
@@ -1632,16 +1619,19 @@ Force update the index:
 ```bash
 sudo updatedb
 locate userdel
-# Output now includes: /home/youruser/userdel
+
+# output:
+/home/youruser/userdel
 ```
 
 Filter `locate` results to narrow the search:
 
 ```bash
 locate userdel | grep bin
-# Output: /usr/sbin/userdel
-```
 
+# output:
+/usr/sbin/userdel
+```
 
 ## Permissions Matter
 
@@ -1649,22 +1639,30 @@ Some files may not appear without elevated privileges:
 
 ```bash
 locate .bashrc
-# Limited results
+
+# output:
+Limited results
 
 sudo locate .bashrc
-# Full list including /root/.bashrc
+
+# output:
+/root/.bashrc
+...
 ```
 
 Try accessing a file directly:
 
 ```bash
 ls -l /root/.bashrc
-# Output: Permission denied
+
+# Output:
+Permission denied
 
 sudo !!
-# Now it shows file details
-```
 
+# output:
+Shows file details
+```
 
 ## Manual Search Using Directory Knowledge
 
@@ -1672,24 +1670,28 @@ If `locate` isn’t available, check common locations:
 
 ```bash
 ls -ld /*bin
+
 # Output:
-# /bin -> /usr/bin
-# /sbin -> /usr/sbin
+/bin -> /usr/bin
+/sbin -> /usr/sbin
 ```
 
 Search in likely directories:
 
 ```bash
 ls -l /usr/bin/userdel
-# No such file
+
+# output:
+No such file
 
 ls -l /usr/sbin/userdel
-# File found
+
+# output:
+File found
 ```
 
 - System admin tools usually live in `/sbin` or `/usr/sbin`
 - General user commands live in `/bin` or `/usr/bin`
-
 
 ## Using `find` for Real-Time Searching
 
@@ -1697,10 +1699,14 @@ Unlike `locate`, `find` searches live file systems:
 
 ```bash
 find /usr/bin/
-# Lists all files recursively
+
+# output:
+Lists all files recursively
 
 find /usr/sbin/ -name userdel
-# Exact file search
+
+# output:
+Exact file search
 ```
 
 Search the entire system:
@@ -1708,19 +1714,24 @@ Search the entire system:
 ```bash
 find /usr/bin/
 find / -name userdel
-# May show permission errors
+
+# output:
+Some files/directoryies may show permission errors
 
 find / -name userdel 2>/dev/null
-# Suppresses errors
+
+# output:
+Suppresses errors
 ```
 
 With root access:
 
 ```bash
 sudo find / -name userdel
-# Guaranteed complete result
-```
 
+# output:
+Guaranteed complete result
+```
 
 ## Switching to Root User
 
@@ -1728,12 +1739,13 @@ Some commands may exist only in root’s path:
 
 ```bash
 su -
-# Enter root password
+password: <password>
 
 type -a userdel
+
 # Output:
-# userdel is /sbin/userdel
-# userdel is /usr/sbin/userdel
+userdel is /sbin/userdel
+userdel is /usr/sbin/userdel
 ```
 
 This confirms the command exists even if your normal user can't find it due to `$PATH` limitations.
@@ -1743,7 +1755,6 @@ This confirms the command exists even if your normal user can't find it due to `
 # Userdel Command
 
 The `userdel` command deletes a user account and optionally removes related files.
-
 
 ## Basic Syntax
 
@@ -1758,7 +1769,6 @@ Common Options:
 
 > Use `-f` with caution. Shared home directories (though uncommon) may contain data used by other accounts.
 
-
 ## Example: Delete a User
 
 ```bash
@@ -1769,18 +1779,17 @@ Check if the user still exists:
 
 ```bash
 id madan
-# Output: id: madan: no such user
+
+# Output:
+id: madan: no such user
 ```
 
 Check the home directory:
 
 ```bash
 ls -l /home
-```
 
-Sample output:
-
-```bash
+# output:
 drwx------ 2 kumar kumar 4096 Jan 23 16:58 kumar
 drwx------ 2 1001  1001  4096 Jan 23 16:58 madan
 ```
@@ -1789,32 +1798,36 @@ Even though `madan` was deleted, the home directory remains. The user and group 
 
 > If you see numeric UID/GID in `ls` output, it usually means the user or group was deleted.
 
-
 ## Understanding UIDs
 
 Root always has UID 0:
 
 ```bash
 id -u root
-# Output: 0
+
+# Output:
+0
 ```
 
 System/application accounts usually have UIDs below `1000`. e.g., check sshd UID:
 
 ```bash
 id -u sshd
-# Output: 74
+
+# Output:
+74
 ```
 
 Regular users start at UID `1000`. e.g., check current user's UID:
 
 ```bash
 id -u
-# Output: 1000
+
+# Output:
+1000
 ```
 
 These UID ranges are configured in `/etc/login.defs`.
-
 
 ## Check UID Ranges
 
@@ -1843,14 +1856,15 @@ This defines:
 
 > Always verify a user's UID before deletion. Avoid removing system accounts unless you’re sure.
 
-
 ## Example: Delete User and Remove Home Directory
 
 Check UID of the user:
 
 ```bash
 id -u kumar
-# Output: 1002
+
+# Output:
+1002
 ```
 
 Delete user and home directory:
@@ -1863,10 +1877,14 @@ Verify deletion:
 
 ```bash
 id -u kumar
-# Output: id: kumar: no such user
+
+# Output:
+id: kumar: no such user
 
 ls -l /home/kumar
-# Output: ls: cannot access /home/kumar: No such file or directory
+
+# Output:
+ls: cannot access /home/kumar: No such file or directory
 ```
 
 ---
@@ -1874,7 +1892,6 @@ ls -l /home/kumar
 # Archives with `tar`
 
 The `tar` command archives files and directories. It originally stood for **Tape Archive**, but now it's used for archiving data to any storage, not just tapes.
-
 
 ## Syntax
 
@@ -1891,7 +1908,6 @@ Common Options
 - `-x`: Extract archive
 - `-z`: Compress with gzip
 
-
 ## Creating an Archive
 
 Archive a directory called `mydirectory`:
@@ -1904,9 +1920,10 @@ View the result:
 
 ```bash
 ls
-# Output: mydirectory  mydirectory.tar
-```
 
+# Output:
+mydirectory  mydirectory.tar
+```
 
 ## Listing Archive Contents
 
@@ -1919,7 +1936,6 @@ To see files as they're added (verbose):
 ```bash
 tar -cvf mydirectory.tar mydirectory
 ```
-
 
 ## Extracting Archive
 
@@ -1937,7 +1953,6 @@ Verbose extract:
 tar -xvf ../mydirectory.tar
 ```
 
-
 ## Compressing with `gzip`
 
 Two-step compression:
@@ -1946,7 +1961,9 @@ Two-step compression:
 tar -cf mydirectory.tar mydirectory
 gzip mydirectory.tar
 ls
-# Output: mydirectory  mydirectory.tar.gz
+
+# Output:
+mydirectory  mydirectory.tar.gz
 ```
 
 Decompress with gunzip:
@@ -1954,9 +1971,10 @@ Decompress with gunzip:
 ```bash
 gunzip mydirectory.tar.gz
 ls
-# Output: mydirectory  mydirectory.tar
-```
 
+# Output:
+mydirectory  mydirectory.tar
+```
 
 ## Compress and Archive in One Step
 
@@ -1970,7 +1988,6 @@ List compressed archive contents:
 tar -ztvf mydirectory.tar.gz
 ```
 
-
 ## Using `.tgz` Extension
 
 ```bash
@@ -1978,7 +1995,6 @@ tar -zcf mydirectory.tgz mydirectory
 ```
 
 `.tgz` and `.tar.gz` are the same format.
-
 
 ## Overwrite Warning
 
@@ -1989,16 +2005,19 @@ Example:
 ```bash
 echo 'hello' > mydirectory/cat.txt
 cat mydirectory/cat.txt
-# Output: hello
+
+# Output:
+hello
 
 tar -zxf ../mydirectory.tgz
 
 cat mydirectory/cat.txt
-# Output: (empty)
+
+# Output:
+empty content
 ```
 
 `cat.txt` was silently overwritten with the archived version of `cat.txt` which was empty.
-
 
 ## Permissions Required
 
@@ -2017,7 +2036,6 @@ tar: Removing leading ‘/’ from member names
 ```
 
 This avoids overwriting system files when extracting.
-
 
 ## Legacy Syntax
 
@@ -2043,17 +2061,15 @@ tar -z -c -v -f mydirectory.tgz mydirectory
 
 If someone is going on an extended leave, it’s a good idea to disable their account temporarily to reduce the attack surface. This prevents unauthorized use while keeping the account ready for future use.
 
-
 ## Use `chage` to Expire an Account
 
 The `chage` command (short for *change age*) is a reliable way to disable a user account.
 
-### Syntax
+#### Syntax
 
 ```bash
 chage [options] LOGIN
 ```
-
 
 ## Expire an Account Immediately
 
@@ -2065,15 +2081,11 @@ Test it:
 
 ```bash
 su - madan
-```
 
-Output:
-
-```bash
+# output:
 Your account has expired; please contact your system administrator
 su: User account has expired
 ```
-
 
 ## Unexpire the Account
 
@@ -2085,59 +2097,45 @@ Test login:
 
 ```bash
 su - madan
-```
 
-Output:
-
-```bash
+# output:
 Last login: Tue Jan 23 17:55:09 EST 2018 on pts/0
 Last failed login: Tue Jan 23 17:55:31 EST 2018 on pts/0
 There was 1 failed login attempt since the last successful login.
 ```
 
-
 ## Using `passwd` to Lock and Unlock Accounts
 
-### Lock an Account
+#### Lock an Account
 
 ```bash
 sudo passwd -l madan
-```
 
-Output:
-
-```bash
+# ouput:
 Locking password for user madan
 passwd: Success
 ```
 
-### Unlock an Account
+#### Unlock an Account
 
 ```bash
 sudo passwd -u madan
-```
 
-Output:
-
-```bash
+# output:
 Unlocking password for user madan
 passwd: Success
 ```
 
 > ⚠️ This method does not prevent SSH key-based login.
 
-
 ## Change User Shell to Prevent Login
 
-### Check Available Shells
+#### Check Available Shells
 
 ```bash
 cat /etc/shells
-```
 
-Output:
-
-```bash
+# output:
 /bin/sh
 /bin/bash
 /sbin/nologin
@@ -2146,14 +2144,13 @@ Output:
 /usr/sbin/nologin
 ```
 
-### Set User Shell to `nologin`
+#### Set User Shell to `nologin`
 
 ```bash
 sudo usermod -s /sbin/nologin madan
 ```
 
 This works for interactive logins, but SSH port forwarding and some non-interactive logins may still succeed. Again, prefer `chage -E 0` for reliable account disablement.
-
 
 ## Shell Script to Delete a User Account
 
@@ -2188,22 +2185,17 @@ exit 0
 
 # Cut Command
 
-The `cut` command extracts specific sections from each line of input. Output is sent to `STDOUT`.
-
-You can extract:
-
-- By byte position with `-b`
-- By character position with `-c`
-- By field (column) with `-f`
-
-When using `-f`, use `-d` to specify the delimiter (default is tab).
-
-Ideal use case: extract columns from structured files (e.g., CSV, `/etc/passwd`).
-
+- The `cut` command extracts specific sections from each line of input. Output is sent to `STDOUT`.
+- You can extract:
+  - By byte position with `-b`
+  - By character position with `-c`
+  - By field (column) with `-f`
+- When using `-f`, use `-d` to specify the delimiter (default is tab).
+- Ideal use case: extract columns from structured files (e.g., CSV, `/etc/passwd`).
 
 ## Examples Using /etc/passwd
 
-### Cut by Character (`-c`)
+#### Cut by Character (`-c`)
 
 Print the 1st character of each line:
 
@@ -2233,6 +2225,7 @@ Print the first 4 characters:
 
 ```bash
 cut -c -4 /etc/passwd
+
 # Same as:
 cut -c 1-4 /etc/passwd
 ```
@@ -2255,7 +2248,7 @@ If the position doesn’t exist (e.g., 999th character), blank lines are returne
 cut -c 999 /etc/passwd
 ```
 
-### Cut by Byte (`-b`)
+#### Cut by Byte (`-b`)
 
 ```bash
 cut -b 1 /etc/passwd
@@ -2263,11 +2256,10 @@ cut -b 1 /etc/passwd
 
 > **Note**: For standard ASCII, `-b` and `-c` are equivalent. For multibyte characters (e.g., UTF-8), they're different.
 
-### Cut by Field (`-f`)
+#### Cut by Field (`-f`)
 
-Fields are separated by tab by default.
-
-Create tab-delimited data:
+- Fields are separated by tab by default.
+- Create tab-delimited data:
 
 ```bash
 echo -e 'one\ttwo\tthree'
@@ -2281,7 +2273,7 @@ echo -e 'one\ttwo\tthree' | cut -f 1
 
 Change to 2nd or 3rd field by updating the `-f` value.
 
-### Using Custom Delimiters (e.g., comma in CSV)
+#### Using Custom Delimiters (e.g., comma in CSV)
 
 ```bash
 echo 'one,two,three' | cut -d ',' -f 1
@@ -2300,7 +2292,6 @@ echo 'one\two\three' | cut -d '\' -f 1  # Incorrect
 echo 'one\two\three' | cut -d '\\' -f 1  # Correct
 ```
 
-
 ## Use Case: `/etc/passwd` Fields
 
 Colon (`:`) is the delimiter.
@@ -2316,7 +2307,6 @@ Change output delimiter to a comma:
 ```bash
 cut -d ':' -f 1,3 --output-delimiter=',' /etc/passwd
 ```
-
 
 ## Cutting CSV Files and Removing Headers
 
@@ -2344,24 +2334,22 @@ firstly
 Mr. firstly
 ```
 
-### Solution one - Remove header before `cut`
+#### Solution one - Remove header before `cut`
 
 ```bash
 grep -v '^first,last$' people.csv | cut -d ',' -f 1
 ```
 
 Explanation:
-
 - `^` matches start of line
 - `$` matches end of line
 - `-v` inverts match
 
-### Solution two - Use `cut` first, then filter header
+#### Solution two - Use `cut` first, then filter header
 
 ```bash
 cut -d ',' -f 1 people.csv | grep -v '^first$'
 ```
-
 
 ## Limitation: Single-character Delimiter Only
 
@@ -2374,15 +2362,12 @@ DATA:firstlyDATA:mclasty
 DATA:Mr firstlyDATA:mclasty
 ```
 
-Attempting this:
+#### Attempting `cut` command:
 
 ```bash
 cut -d 'DATA:' -f 2 people.dat
-```
 
-Results in error:
-
-```bash
+# output:
 cut: the delimiter must be a single character
 ```
 
@@ -2393,7 +2378,6 @@ Solution: Use `awk` or similar tools for multi-character delimiters.
 # AWK Command
 
 Unlike `cut`, `awk` can handle **multi-character delimiters**.
-
 
 ## Example: Using `awk` with Custom Delimiter
 
@@ -2406,13 +2390,12 @@ DATA:firstlyDATA:mclasty
 DATA:Mr firstlyDATA:mclasty
 ```
 
+#### Attempting `awk` command:
+
 ```bash
 awk -F 'DATA:' '{print $2}' people.dat
-```
 
-Output:
-
-```bash
+# output:
 first
 John
 firstly
@@ -2420,11 +2403,9 @@ Mr firstly
 ```
 
 Breakdown:
-
 - `-F`: Specifies the field separator (`DATA:` in this case).
 - `{}`: Defines the action to take (`print` in this case).
 - `$2`: Prints the second field.
-
 
 ## Comparing `cut` and `awk`
 
@@ -2451,7 +2432,6 @@ awk -F ':' '{print $1 ", " $3}' /etc/passwd
 awk -F ':' '{print "COL1: " $1 " COL3: " $3}' /etc/passwd
 ```
 
-
 ## Field Reordering
 
 You cannot change field order using `cut`:
@@ -2466,7 +2446,6 @@ You can with `awk`:
 awk -F ':' '{print $3, $1}' /etc/passwd
 ```
 
-
 ## Special Variable: `$NF`
 
 - `$NF` returns the last field.
@@ -2478,7 +2457,6 @@ Examples:
 awk -F ':' '{print $NF}' /etc/passwd
 awk -F ':' '{print $(NF - 1)}' /etc/passwd
 ```
-
 
 ## AWK and Irregular Whitespace
 
@@ -2495,20 +2473,16 @@ Command:
 
 ```bash
 awk '{print $1, $2}' lines
-```
 
-Output:
-
-```bash
+# output:
 L1C1 L1C2
 L2C1 L2C2
 L3C1 L3C2
 L4C1 L4C2
 ```
 
-- AWK uses whitespace (spaces/tabs) as the default field separator.
+- `awk` uses whitespace (spaces/tabs) as the default field separator.
 - It handles extra/missing spaces and tabs cleanly.
-
 
 ## Extracting Open Port Numbers with AWK
 
@@ -2516,11 +2490,8 @@ Command:
 
 ```bash
 netstat -nutl
-```
 
-Output:
-
-```bash
+# output:
 Active Internet connections (only servers)
 Proto Recv-Q Send-Q Local Address           Foreign Address         State
 tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN
@@ -2532,33 +2503,28 @@ udp        0      0 0.0.0.0:7755            0.0.0.0:*
 udp        0      0 :::26314                :::*
 ```
 
-### Step 1: Remove header lines
+#### Step 1: Remove header lines
 
 ```bash
 netstat -nutl | grep -Ev '^Active|^Proto'
-```
 
-or:
+# or
 
-```bash
 netstat -nutl | grep ':'
 ```
 
-### Step 2: Extract the 4th column (Local Address)
+#### Step 2: Extract the 4th column (Local Address)
 
 ```bash
 netstat -nutl | grep ':' | awk '{print $4}'
 ```
 
-### Step 3: Extract the port number from Local Address
+#### Step 3: Extract the port number from Local Address
 
 ```bash
 netstat -nutl | grep ':' | awk '{print $4}' | awk -F ':' '{print $NF}'
-```
 
-Output:
-
-```bash
+# output:
 22
 25
 22
@@ -2568,18 +2534,16 @@ Output:
 26314
 ```
 
-### Filtering Only IPv4 (TCP4) Ports
+#### Filtering Only IPv4 (TCP4) Ports
 
 ```bash
 netstat -4nutl | grep ':' | awk '{print $4}' | awk -F ':' '{print $2}'
 
 # or
+
 netstat -4nutl | grep ':' | awk '{print $4}' | cut -d ':' -f 2
-```
 
-Result:
-
-```bash
+# output:
 22
 25
 68
@@ -2592,53 +2556,51 @@ Result:
 
 This guide explains how to use `sort`, `uniq`, and `wc` in Linux for text processing and data analysis.
 
-
 ## `sort`
 
 Sorts lines of text files.
 
-### Basic alphabetical sort
+#### Basic alphabetical sort
 
 ```bash
 sort /etc/passwd
 ```
 
-### Reverse order
+#### Reverse order
 
 ```bash
 sort -r /etc/passwd
 ```
 
-### Sort numerically
+#### Sort numerically
 
 ```bash
 cut -d ':' -f 3 /etc/passwd | sort -n
 ```
 
-### Sort human-readable sizes
+#### Sort human-readable sizes
 
 ```bash
 du -h /var | sort -h
 ```
 
-### Remove duplicate lines
+#### Remove duplicate lines
 
 ```bash
 sort -u filename
 ```
 
-
 ## `uniq`
 
 Removes duplicate adjacent lines in a file. Works best with sorted input.
 
-### Basic usage
+#### Basic usage
 
 ```bash
 sort filename | uniq
 ```
 
-### Count occurrences
+#### Count occurrences
 
 ```bash
 cat /var/log/messages | awk '{print $5}' | sort | uniq -c
@@ -2652,47 +2614,46 @@ To find the most frequent IPs hitting your web server:
 cat access.log | awk '{print $1}' | sort | uniq -c | sort -nr
 ```
 
-
 ## `wc`
 
 Counts lines, words, and characters in files.
 
-### Full output:
+#### Full output:
 
 ```bash
 wc /etc/passwd
 
-# output: 25 50 1245 /etc/passwd
+# output:
+25 50 1245 /etc/passwd
 ```
 
 - 25 lines
 - 50 words
 - 1245 characters
 
-### Word count only
+#### Word count only
 
 ```bash
 wc -w /etc/passwd
 ```
 
-### Byte/character count
+#### Byte/character count
 
 ```bash
 wc -c /etc/passwd
 ```
 
-### Line count
+#### Line count
 
 ```bash
 wc -l /etc/passwd
 ```
 
-
 ## Sorting with a Specific Field
 
 Use `-t` to set a delimiter and `-k` to define the sort field.
 
-### Example: Sort `/etc/passwd` by UID (3rd field, colon-separated)
+#### Example: Sort `/etc/passwd` by UID (3rd field, colon-separated)
 
 ```bash
 sort -t ':' -k 3 -n /etc/passwd
@@ -2702,21 +2663,16 @@ sort -t ':' -k 3 -n /etc/passwd
 
 # SED — Stream Editor
 
-`sed` stands for **Stream Editor**. It's used for editing data in a stream — such as:
-
-- One process to another via a pipe
-- One file to another via redirect
-- One device to another
-
-`sed` performs basic text transformations:
-
-- Substitute text
-- Remove lines
-- Append text after certain lines
-- Insert text before certain lines
-
-Unlike interactive editors like `vim` or `nano`, `sed` works **non-interactively**, making it ideal for automation and scripting.
-
+- `sed` stands for **Stream Editor**. It's used for editing data in a stream — such as:
+  - One process to another via a pipe
+  - One file to another via redirect
+  - One device to another
+- `sed` performs basic text transformations:
+  - Substitute text
+  - Remove lines
+  - Append text after certain lines
+  - Insert text before certain lines
+- Unlike interactive editors like `vim` or `nano`, `sed` works **non-interactively**, making it ideal for automation and scripting.
 
 
 ## Basic Substitution
@@ -2725,6 +2681,8 @@ Let’s use a file called `manager.txt`:
 
 ```bash
 cat manager.txt
+
+# ouput:
 Dwight is the assistant regional manager.
 ```
 
@@ -2733,7 +2691,8 @@ Replace "assistant" with "assistant to the":
 ```bash
 sed 's/assistant/assistant to the/' manager.txt
 
-# output: Dwight is the assistant to the regional manager.
+# output:
+Dwight is the assistant to the regional manager.
 ```
 
 Format:
@@ -2742,10 +2701,12 @@ Format:
 sed 's/search-pattern/replacement/flags' file
 ```
 
-### Another Example
+#### Another Example
 
 ```bash
 cat love.txt
+
+# output:
 I love my wife.
 ```
 
@@ -2754,15 +2715,15 @@ Replace "my wife" with "sed":
 ```bash
 sed 's/my wife/sed/' love.txt
 
-# output: I love sed
+# output:
+I love sed
 ```
 
-### Case Insensitive Replacement
+#### Case Insensitive Replacement
 
 ```bash
 sed 's/MY WIFE/sed/i' love.txt
 ```
-
 
 ## Global Replacement
 
@@ -2770,6 +2731,8 @@ Add more lines to `love.txt`:
 
 ```bash
 cat love.txt
+
+# output:
 I love my wife.
 This is line 2.
 I love my wife with all of my heart.
@@ -2800,13 +2763,11 @@ I love my wife with all of my heart.
 I love my wife and sed loves me. Also, my wife loves the cat
 ```
 
-
 ## Save Output to New File
 
 ```bash
 sed 's/my wife/sed/g' love.txt > my-new-love.txt
 ```
-
 
 ## In-Place Editing
 
@@ -2818,7 +2779,6 @@ sed -i.bak 's/my wife/sed/' love.txt
 - Backup created: `love.txt.bak`
 - No space allowed after `-i`
 
-
 ## Save Only Matching Lines
 
 ```bash
@@ -2829,11 +2789,12 @@ sed 's/love/like/gw like.txt' love.txt
 
 ```bash
 cat like.txt
+
+# output:
 I like sed.
 I like sed with all of my heart.
 I like sed and my wife likes me. Also, my wife likes the cat
 ```
-
 
 ## Use `sed` in a Pipe
 
@@ -2843,7 +2804,6 @@ cat like.txt | sed 's/my wife/sed/g'
 # equivalent to:
 sed 's/my wife/sed/g' like.txt
 ```
-
 
 ## Use Alternative Delimiters
 
@@ -2861,18 +2821,18 @@ Better: Use alternative delimiter `#`:
 echo '/home/madan' | sed 's#/home/madan#/export/users/kumar#'
 ```
 
-
 ## Practical Use Cases
 
 - Replace placeholders in template files for deployments
 - Change hostnames during server migrations
 - Update configuration files during cluster setup
 
-
 ## Delete Matching Lines
 
 ```bash
 cat love.txt
+
+# output:
 I love sed.
 This is line 2.
 I love sed with all of my heart.
@@ -2891,11 +2851,12 @@ Delete lines containing "love":
 sed '/love/d' love.txt
 ```
 
-
 ## Example - Clean Configuration Files
 
 ```bash
 cat config
+
+# output:
 # User to run service as.
 User apache
 
@@ -2927,13 +2888,11 @@ sed '/^#/d; /^$/d' config
 
 This guide sets up a simple virtual network of 3 machines to simulate a company environment. We'll configure name resolution, SSH key-based authentication, and remote command execution.
 
-
 ## Virtual Machine Setup
 
 - `admin01`: Main administration VM.
 - `server01`: Target server.
 - `server02`: Another target server.
-
 
 ## Configure Local Name Resolution
 
@@ -2954,9 +2913,12 @@ Avoid this incorrect usage:
 
 ```bash
 sudo echo test >> /etc/hosts
-# Results in "Permission denied" because redirection isn't run as root
+
+# output:
+Permission denied
 ```
 
+Results in "Permission denied" because redirection isn't run as root
 
 ## Test Hostname Resolution
 
@@ -2965,13 +2927,13 @@ ping -c3 server01
 ping -c3 server02
 ```
 
-
 ## Set Up SSH Key-Based Authentication
 
 Generate an SSH key pair:
 
 ```bash
 ssh-keygen
+
 # Accept defaults and leave passphrase empty
 ```
 
@@ -2986,12 +2948,15 @@ To verify, ssh into each server:
 
 ```bash
 ssh server01
-# prompt changes to server01
+
+# output:
+Prompt changes to server01
 
 ssh server02
-# prompt changes to server02
-```
 
+# output: 
+Prompt changes to server02
+```
 
 ## Run Remote Commands Without Interactive Login
 
@@ -2999,10 +2964,14 @@ Basic usage:
 
 ```bash
 ssh server01 hostname
-# output: server01
+
+# output:
+server01
 
 ssh server02 uptime
-# output: 17:21:39 up  7:11,  1 user,  load average: 0.02, 0.04, 0.01
+
+# output:
+17:21:39 up  7:11,  1 user,  load average: 0.02, 0.04, 0.01
 ```
 
 Loop through servers:
@@ -3037,31 +3006,32 @@ server02
 17:27:53 up  7:11,  1 user,  load average: 0.02, 0.04, 0.01
 ```
 
-
 ## Quoting Matters in SSH Commands
 
 Incorrect:
 
 ```bash
 ssh server01 hostname ; hostname
+
 # output:
 server01
 admin01
-
-# Second `hostname` runs locally
 ```
+
+Second `hostname` ran locally.
+
 
 Correct:
 
 ```bash
 ssh server01 'hostname ; hostname'
+
 # output:
 server01
 server01
-
-# Both commands run remotely
 ```
 
+Both commands ran remotely.
 
 ## Variable Usage in SSH
 
@@ -3075,7 +3045,6 @@ ssh server01 "$CMD1 ; $CMD2"
 server01
 17:31:53 up  7:11,  1 user,  load average: 0.03, 0.04, 0.01
 ```
-
 
 ## Remote Piping
 
@@ -3091,7 +3060,6 @@ Head runs locally (not ideal):
 ssh server01 ps -ef | head -3
 ```
 
-
 ## SSH Exit Status
 
 SSH exits with the status of the last remote command or `255` if SSH failed.
@@ -3100,30 +3068,47 @@ Example:
 
 ```bash
 ssh server03 uptime
-# ssh: Could not resolve hostname
-echo $?   # 255
+
+# output:
+ssh: Could not resolve hostname
+
+echo $?
+
+# output:
+255
 
 ssh server02 hostname
-echo $?   # 0
+echo $?
+
+# output:
+0
 ```
 
-### Understand `true` and `false`
+#### Understand `true` and `false`
 
 ```bash
 ssh server01 'false | true'
-echo $?   # 0
+echo $?
+
+# output
+0
 
 ssh server01 'true | false'
-echo $?   # 1
+echo $?
+
+# output:
+1
 ```
 
-### Use `pipefail` for strict checks
+#### Use `pipefail` for strict checks
 
 ```bash
 ssh server01 'set -o pipefail; false | true'
-echo $?   # 1
-```
+echo $?
 
+# output:
+1
+```
 
 ## One-Way Trust Model
 
@@ -3131,21 +3116,24 @@ echo $?   # 1
 - Reverse isn't configured by default.
 - To enable reverse, repeat SSH key setup in reverse direction.
 
-
 ## Example: Running a Command with `sudo`
 
 ```bash
 ssh server01 sudo id
-# output: uid=0(root) gid=0(root) groups=0(root)
 
-# displays root user of remote system
+# output:
+uid=0(root) gid=0(root) groups=0(root)
 ```
+
+displays root user of remote system
 
 > **Remember**: SSH runs as the current user. sudo is evaluated remotely.
 
 ```bash
 sudo ssh server01 id
-# output: uid=0(root) gid=0(root) groups=0(root)
 
-# displays root user of local system
+# output:
+uid=0(root) gid=0(root) groups=0(root)
 ```
+
+displays root user of local system
